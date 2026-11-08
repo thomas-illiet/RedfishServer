@@ -10,6 +10,7 @@ import threading
 
 import pytest
 
+from redfish_mock.constants import PROFILES
 from redfish_mock.engine import MockBMC
 from redfish_mock.server import MockHTTPServer
 
@@ -48,8 +49,8 @@ class Client:
                     json.loads(payload)
                     if payload and response.headers.get_content_type() == "application/json"
                     else payload.decode()
-                    if payload
-                    else None
+                    if payload and not response.headers.get_content_type().startswith("image/")
+                    else payload or None
                 ),
                 response.headers,
             )
@@ -63,10 +64,15 @@ def serve():
     servers = []
     threads = []
 
-    def start(profile="dell", *, tls=None, **kwargs):
+    def start(profile="dell", *, tls=None, multi=False, **kwargs):
         """Create one test server with optional TLS and static metrics by default."""
         kwargs.setdefault("dynamic_metrics", False)
-        server = MockHTTPServer(("127.0.0.1", 0), MockBMC(profile, **kwargs))
+        bmcs = (
+            {name: MockBMC(name, **kwargs) for name in PROFILES}
+            if multi
+            else MockBMC(profile, **kwargs)
+        )
+        server = MockHTTPServer(("127.0.0.1", 0), bmcs)
         context = None
         if tls:
             cert, key = tls
@@ -78,6 +84,7 @@ def serve():
         worker.start()
         servers.append(server)
         threads.append(worker)
+        server.wait_started()
         return Client(server, context)
 
     yield start

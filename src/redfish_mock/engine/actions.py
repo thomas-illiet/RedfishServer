@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
 
 from redfish_mock.contracts import hpe_message, supermicro_success
 from redfish_mock.models import Json, RedfishError, Result
 from redfish_mock.monitoring import monitoring_resources, power_off, update_health
 
+from .capabilities import action_kind, advertised_actions, reset_types
 from .resources import read
 
 if TYPE_CHECKING:
@@ -20,32 +21,20 @@ def execute(bmc: MockBMC, path: str, body: Json) -> Result:
     owner = path.split("/Actions/", 1)[0]
     resource = read(bmc, owner)
 
-    def _find_target(node: Any) -> Json | None:
-        """Find the advertised action definition matching the requested target."""
-        if isinstance(node, dict):
-            if node.get("target", "").rstrip("/") == path:
-                return node
-            for value in node.values():
-                found = _find_target(value)
-                if found is not None:
-                    return found
-        return None
-
-    definition = _find_target(resource)
+    definition = advertised_actions(resource).get(path)
     if definition is None:
         raise RedfishError(404, "Action is not advertised by this profile.", "ActionNotSupported")
     action = path.rsplit("/", 1)[-1]
+    kind = action_kind(bmc.profile, path)
     if bmc.profile == "supermicro" and action.startswith("VirtualMedia."):
         raise RedfishError(
             501,
             "Supermicro virtual media requires an async task workflow not simulated here.",
             "ActionNotSupported",
         )
-    if action in ("ComputerSystem.Reset", "Manager.Reset"):
+    if kind == "reset":
         reset_type = body.get("ResetType")
-        allowed = definition.get(
-            "ResetType@Redfish.AllowableValues", ["GracefulRestart", "ForceRestart"]
-        )
+        allowed = reset_types(definition)
         if reset_type not in allowed:
             raise RedfishError(
                 400, "Missing or unsupported ResetType.", "ActionParameterValueNotInList"
@@ -70,7 +59,7 @@ def execute(bmc: MockBMC, path: str, body: Json) -> Result:
                 and boot.get("BootSourceOverrideEnabled") == "Once"
             ):
                 boot["BootSourceOverrideEnabled"] = "Disabled"
-    elif action in ("VirtualMedia.InsertMedia", "HpeiLOVirtualMedia.InsertVirtualMedia"):
+    elif kind == "insert":
         image = body.get("Image")
         if not isinstance(image, str) or urlsplit(image).scheme not in (
             "http",
@@ -95,7 +84,7 @@ def execute(bmc: MockBMC, path: str, body: Json) -> Result:
             WriteProtected=protected,
             ConnectedVia="URI" if inserted else "NotConnected",
         )
-    elif action in ("VirtualMedia.EjectMedia", "HpeiLOVirtualMedia.EjectVirtualMedia"):
+    elif kind == "eject":
         resource.update(Image=None, Inserted=False, ConnectedVia="NotConnected")
     else:
         raise RedfishError(

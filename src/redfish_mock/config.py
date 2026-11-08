@@ -12,10 +12,13 @@ from .constants import FIXTURES, PROFILES
 def parser() -> argparse.ArgumentParser:
     """Build server options with environment-backed defaults."""
     cli = argparse.ArgumentParser(
-        description="Local Redfish BMC mocks for Dell, HPE and Supermicro."
+        description="Local Redfish BMC mocks for Dell, HPE, Supermicro, Lenovo and HPE iLO 4."
     )
     mode = cli.add_mutually_exclusive_group()
     mode.add_argument("--vendor", choices=PROFILES, default="dell")
+    mode.add_argument(
+        "--multi-profile", action="store_true", help="All five profiles under /PROFILE on one port"
+    )
     mode.add_argument(
         "--fleet", action="store_true", help="Dell on port, HPE on port+1, Supermicro on port+2"
     )

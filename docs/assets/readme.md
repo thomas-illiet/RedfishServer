@@ -11,7 +11,7 @@ needed to display them.
 
 | Diagram | Source | Export | Used in |
 |---|---|---|---|
-| Deployment of the three profiles | [deployment.drawio](deployment.drawio) | [deployment.svg](deployment.svg) | [Overview](../readme.md), [deployment](../deployment.md) |
+| Single-domain deployment of five profiles | [deployment.drawio](deployment.drawio) | [deployment.svg](deployment.svg) | [Overview](../readme.md), [deployment](../deployment.md) |
 | Loading data and processing requests | [architecture.drawio](architecture.drawio) | [architecture.svg](architecture.svg) | [Architecture](../architecture.md) |
 | Resource navigation | [redfish-resources.drawio](redfish-resources.drawio) | [redfish-resources.svg](redfish-resources.svg) | [API](../api.md) |
 | Simulation and power state | [monitoring-cycle.drawio](monitoring-cycle.drawio) | [monitoring-cycle.svg](monitoring-cycle.svg) | [Monitoring](../monitoring.md) |

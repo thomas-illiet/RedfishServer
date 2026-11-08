@@ -22,8 +22,9 @@ def main(argv: list[str] | None = None) -> None:
     """Validate options, start all profile workers and coordinate graceful shutdown."""
     cli = parser()
     args = cli.parse_args(argv)
-    vendors = PROFILES[:3] if args.fleet else (args.vendor,)
-    if not 1 <= args.port <= 65536 - len(vendors):
+    vendors = PROFILES if args.multi_profile else PROFILES[:3] if args.fleet else (args.vendor,)
+    ports = 1 if args.multi_profile else len(vendors)
+    if not 1 <= args.port <= 65536 - ports:
         cli.error("Choose a valid port range (1-65535).")
     if not math.isfinite(args.delay_ms) or not 0 <= args.delay_ms <= 60000:
         cli.error("--delay-ms must be between 0 and 60000.")
@@ -46,8 +47,8 @@ def main(argv: list[str] | None = None) -> None:
         stop.set()
 
     try:
-        for offset, vendor in enumerate(vendors):
-            bmc = MockBMC(
+        profiles = {
+            vendor: MockBMC(
                 vendor,
                 mockups_dir=args.mockups_dir,
                 username=args.username,
@@ -60,6 +61,10 @@ def main(argv: list[str] | None = None) -> None:
                 metric_interval=args.metric_interval,
                 seed=args.seed,
             )
+            for vendor in vendors
+        }
+        groups = [profiles] if args.multi_profile else list(profiles.values())
+        for offset, bmc in enumerate(groups):
             server = MockHTTPServer(
                 (args.host, args.port + offset),
                 bmc,
@@ -80,18 +85,20 @@ def main(argv: list[str] | None = None) -> None:
             server.wait_started()
         for server in servers:
             scheme = "https" if args.cert else "http"
-            print(
-                json.dumps(
-                    {
-                        "event": "started",
-                        "profile": server.bmc.profile,
-                        "url": f"{scheme}://{args.host}:{server.server_port}/redfish/v1/",
-                        "storage": "memory",
-                        "production": args.production,
-                    }
-                ),
-                flush=True,
-            )
+            for profile in server.profiles:
+                prefix = "/" + profile if args.multi_profile else ""
+                print(
+                    json.dumps(
+                        {
+                            "event": "started",
+                            "profile": profile,
+                            "url": f"{scheme}://{args.host}:{server.server_port}{prefix}/redfish/v1/",
+                            "storage": "memory",
+                            "production": args.production,
+                        }
+                    ),
+                    flush=True,
+                )
         while not stop.wait(0.2):
             if any(not worker.is_alive() for worker in workers):
                 raise RuntimeError("A profile server stopped unexpectedly.")

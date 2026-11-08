@@ -15,25 +15,7 @@ x-bmc: &bmc
   init: true
 
 services:
-  dell:
+  redfish:
     <<: *bmc
-    command: [--vendor, dell, --host, 0.0.0.0, --port, '8000']
-    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8001:8000']
-  hpe:
-    <<: *bmc
-    command: [--vendor, hpe, --host, 0.0.0.0, --port, '8000']
-    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8002:8000']
-  supermicro:
-    <<: *bmc
-    command: [--vendor, supermicro, --host, 0.0.0.0, --port, '8000']
-    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8003:8000']
-  lenovo:
-    <<: *bmc
-    profiles: [extras]
-    command: [--vendor, lenovo, --host, 0.0.0.0, --port, '8000']
-    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8004:8000']
-  hpe-ilo4:
-    <<: *bmc
-    profiles: [extras]
-    command: [--vendor, hpe-ilo4, --host, 0.0.0.0, --port, '8000']
-    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8005:8000']
+    command: [--multi-profile, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:${REDFISH_PORT:-8000}:8000']

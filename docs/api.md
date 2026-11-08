@@ -4,7 +4,47 @@
 
 This reference describes the subset implemented by the mock. A link in a
 fixture does not guarantee that all its actions are supported. Examples use
-Dell on 8001 and the default local credentials.
+Dell under `/dell` on port 8000 and the default local credentials.
+
+## Interactive documentation
+
+Open the instance root, for example [Dell Swagger](http://127.0.0.1:8000/dell/).
+Swagger UI and its assets are bundled locally and work without Internet access.
+`GET /dell/openapi.json` exports the OpenAPI 3.1 description for the active profile,
+including custom baseline resources and the effect of `--raw-fixtures`.
+The domain root `/` is a catalogue; `/<profile>/` opens that profile's Swagger.
+Unless an absolute URL is shown, API paths below are relative to the profile
+prefix: `/redfish/v1/Systems` means `/dell/redfish/v1/Systems` for Dell.
+Returned links and session `Location` headers already include the prefix.
+Use `/<profile>/healthz` for the profile JSON status.
+GET and HEAD on the page, specification and registered assets are public.
+
+The page is entirely in English and opens directly with Swagger. Its description
+contains a responsive vector illustration inspired by the README mascot, with a
+prominent **Fake** badge and Swagger's gray/green palette. The SVG fills the available width.
+The server uses synthetic data, in-memory changes and partial Redfish coverage. Operations are
+grouped by function; **not simulated (501)** actions are explicitly distinguished
+from simulated actions. Response schemas describe the mock subset, not the full
+DMTF schemas. Examples are synthetic illustrations, not snapshots of active state.
+Reading the documentation does not advance telemetry, fixture sequences or sessions.
+
+Select **Authorize** and use either Basic credentials or `X-Auth-Token`.
+With the default development credentials (`admin` / `admin`), Basic authorization
+is already configured on each Swagger page and **Try it out** works immediately.
+This preset is enabled only when that exact pair is valid and authentication is
+enabled. Custom credentials and production secrets are never published in the
+page or contract; enter them manually in **Authorize**.
+To obtain a token, execute `POST /redfish/v1/SessionService/Sessions` with the
+configured credentials, then copy the response's `X-Auth-Token` into Authorize.
+If both authorization methods are selected, the token takes precedence.
+Manually entered authorization is not retained after reloading the page; the
+public development preset is reapplied when eligible. In `--no-auth` mode,
+ordinary API calls need no authorization; session creation still checks credentials.
+
+**Try it out** sends requests only to the current domain and profile. Writes change its
+shared simulated state, and `POST /_mock/reset` revokes all sessions, including the
+one used to request the reset. Documentation remains public in production mode;
+API authentication and the existing trusted-team access model are unchanged.
 
 ## Resource discovery
 
@@ -18,9 +58,9 @@ and `1` for HPE/Supermicro.
 [Draw.io source](assets/redfish-resources.drawio).
 
 ```sh
-curl -u admin:admin http://127.0.0.1:8001/redfish/v1/
-curl -u admin:admin http://127.0.0.1:8001/redfish/v1/Systems
-curl -u admin:admin http://127.0.0.1:8001/redfish/v1/Systems/System.Embedded.1
+curl -u admin:admin http://127.0.0.1:8000/dell/redfish/v1/
+curl -u admin:admin http://127.0.0.1:8000/dell/redfish/v1/Systems
+curl -u admin:admin http://127.0.0.1:8000/dell/redfish/v1/Systems/System.Embedded.1
 ```
 
 | Discovered resource | Information |
@@ -41,14 +81,15 @@ Embedded sensors may have a fragment URI, such as
 
 ## Authentication
 
-GET/HEAD requests to `/`, `/healthz`, `/readyz`, `/redfish` and `/redfish/v1/` are public.
+GET/HEAD requests to `/`, `/openapi.json`, registered `/assets/swagger-ui/` files,
+`/healthz`, `/readyz`, `/redfish` and `/redfish/v1/` are public.
 Other resources require Basic authentication or a token, except in `--no-auth`
 mode. Session creation checks the credentials in the JSON body:
 
 ```sh
 curl -i -H 'Content-Type: application/json' \
   -d '{"UserName":"admin","Password":"admin"}' \
-  http://127.0.0.1:8001/redfish/v1/SessionService/Sessions
+  http://127.0.0.1:8000/dell/redfish/v1/SessionService/Sessions
 ```
 
 Success returns **201**, `X-Auth-Token` and `Location`. Use the token in the
@@ -69,7 +110,7 @@ do not necessarily have an ETag.
 
 ```sh
 curl -u admin:admin \
-  'http://127.0.0.1:8001/redfish/v1/Systems/System.Embedded.1/Memory?$top=4&$skip=0&$expand=.'
+  'http://127.0.0.1:8000/dell/redfish/v1/Systems/System.Embedded.1/Memory?$top=4&$skip=0&$expand=.'
 ```
 
 Collections accept `$top`, `$skip` and `$expand=.` or `$expand=*` for a single
@@ -86,13 +127,13 @@ sequences. Time-based simulation may still update readings on both GET
 and HEAD.
 
 ```sh
-python3 -m redfish_mock --vendor dell --port 8001 --play-sequences
+python3 -m redfish_mock --multi-profile --port 8000 --play-sequences
 ```
 
 From another terminal, repeat this read to follow the steps:
 
 ```sh
-curl -u admin:admin http://127.0.0.1:8001/redfish/v1/TaskService/Tasks/JID_001
+curl -u admin:admin http://127.0.0.1:8000/dell/redfish/v1/TaskService/Tasks/JID_001
 ```
 
 These sequences are independent of executed actions; they do not trigger
@@ -119,11 +160,11 @@ modified through PATCH. Unknown or invalid properties are rejected.
 ```sh
 curl -u admin:admin -X PATCH -H 'Content-Type: application/json' \
   -d '{"Boot":{"BootSourceOverrideTarget":"Pxe","BootSourceOverrideEnabled":"Once"}}' \
-  http://127.0.0.1:8001/redfish/v1/Systems/System.Embedded.1
+  http://127.0.0.1:8000/dell/redfish/v1/Systems/System.Embedded.1
 
 curl -u admin:admin -H 'Content-Type: application/json' \
   -d '{"ResetType":"ForceOff"}' \
-  http://127.0.0.1:8001/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset
+  http://127.0.0.1:8000/dell/redfish/v1/Systems/System.Embedded.1/Actions/ComputerSystem.Reset
 ```
 
 Use the `target` advertised in `Actions` for other profiles. Transitions are
@@ -156,8 +197,8 @@ an HPE response is a failure.
 
 ```sh
 curl -u admin:admin -H 'Content-Type: application/json' \
-  -d '{"Scenario":"overheat"}' http://127.0.0.1:8001/_mock/scenario
-curl -u admin:admin -X POST http://127.0.0.1:8001/_mock/reset
+  -d '{"Scenario":"overheat"}' http://127.0.0.1:8000/dell/_mock/scenario
+curl -u admin:admin -X POST http://127.0.0.1:8000/dell/_mock/reset
 ```
 
 Scenarios: `baseline`, `normal`, `high-load`, `overheat`, `psu-failure`,
@@ -177,8 +218,8 @@ Example of injecting a critical state into the Dell system:
 ```sh
 curl -u admin:admin -H 'Content-Type: application/json' \
   -d '{"Path":"/redfish/v1/Systems/System.Embedded.1","Patch":{"Status":{"Health":"Critical"}}}' \
-  http://127.0.0.1:8001/_mock/overrides
-curl -u admin:admin http://127.0.0.1:8001/redfish/v1/Systems/System.Embedded.1
+  http://127.0.0.1:8000/dell/_mock/overrides
+curl -u admin:admin http://127.0.0.1:8000/dell/redfish/v1/Systems/System.Embedded.1
 ```
 
 This injection uses the dedicated test route: a Redfish PATCH cannot modify
@@ -212,7 +253,7 @@ Neither probe requires credentials. Simulated hardware health is independent.
 
 A request body may contain at most 1 MiB and must arrive within 10 seconds.
 Oversized bodies return `413`; incomplete bodies time out with `408`. Saturation
-of the 64-connection/task limit returns `503` and recovers when capacity frees.
+of the 320-connection/task shared limit (64 in legacy modes) returns `503` and recovers when capacity frees.
 Malformed HTTP framing may be rejected by h11 before the application runs;
 these transport errors need not have a vendor JSON envelope. Header names are
 case-insensitive. Chunked request bodies are unsupported (`501`).
@@ -220,3 +261,17 @@ case-insensitive. Chunked request bodies are unsupported (`501`).
 Production mode requires authentication, an explicit username and a non-default
 password. All authenticated users can operate the simulator and its `/_mock`
 controls. It is intended for a trusted internal team, without RBAC separation.
+
+## Profile routing
+
+The exact prefixes are `/dell`, `/hpe`, `/supermicro`, `/lenovo` and `/hpe-ilo4`.
+A bare profile path redirects with 308 to its trailing-slash Swagger page.
+Unknown profiles and unprefixed Redfish routes return 404 in multi-profile mode.
+Ambiguous paths and traversal attempts return 400. The HTTP namespace layer
+preserves query parameters, JSON Pointer fragments and resource ETags.
+`/_mock/overrides` accepts a canonical `Path` or one prefixed with the current
+profile, and rejects targets belonging to another profile.
+
+Clients must support a prefixed base URL. This mounted interface does not offer
+a standard service root at the domain-level `/redfish/v1/`. Use a legacy
+`--vendor` instance for clients that require that fixed location.

@@ -3,7 +3,7 @@
 [Documentation](readme.md) · [Development](development.md) · [API](api.md)
 
 This delivery runs an in-memory Redfish simulator for a trusted internal team.
-It uses Python **3.14.10**, one Uvicorn worker per profile, Docker Compose and
+It uses Python **3.14.10**, one Uvicorn worker serving five independent profiles, Docker Compose and
 an existing HTTPS reverse proxy. Linux x86_64 (`amd64`) and ARM64 (`arm64`) are
 built and tested separately. State and sessions are intentionally ephemeral.
 
@@ -29,17 +29,19 @@ of all application modules. `make verify` adds the following release gates;
 - Build, inspect and save both architectures using pinned image digests.
 - Scan each exact image archive with Trivy. Any HIGH or CRITICAL finding blocks
   release, including findings without a fix. Scanner/database failures also block.
-- Start five disposable production Compose profiles with unique project names,
+- Start one disposable production Compose container with five profiles with unique project names,
   temporary secrets and ephemeral localhost ports. Check configuration, vendor
   behavior, inventory, dynamic measurements, readiness and clean SIGTERM exit.
-- Test all five profiles through a temporary HTTPS proxy with certificate
+- Test all five profile prefixes on the server's native HTTPS endpoint with certificate
   verification, then run **20 concurrent clients per profile for 60 seconds**.
   Unexpected responses, server errors, timeouts and blocked clients fail the gate.
 - Record request counts, throughput, p95 and maximum latency, container resource
   samples, architecture and whether execution used emulation.
 
-The validator removes its own temporary containers and networks. It does not
-modify the default development stack or your real proxy. Load results describe
+The validator checks the default HTTP setup, then recreates the same service with
+a temporary certificate and HTTPS health check. No proxy container is required.
+It removes its own temporary containers and networks and does not modify the
+default development stack or your real proxy. Load results describe
 the validation machine, including emulation overhead; they are not a hardware
 capacity guarantee. Integrity tests preserve the 267 imported JSON payloads and
 the generator's executable syntax; its local additions are docstrings only.
@@ -113,23 +115,27 @@ docker compose --env-file .env.production -f compose.production.yaml up -d --wai
 docker compose --env-file .env.production -f compose.production.yaml ps
 ```
 
-Add `--profile extras` before `up` to include Lenovo and HPE iLO 4. The main
-profiles use host ports 8001–8003; the optional profiles use 8004–8005. Override
-`REDFISH_DELL_PORT`, `REDFISH_HPE_PORT`, `REDFISH_SUPERMICRO_PORT`,
-`REDFISH_LENOVO_PORT` and `REDFISH_ILO4_PORT` if required.
+All five profiles start by default. A single port, 8000, is published on localhost.
+Set `REDFISH_PORT` to change that host port. The catalogue is `/`; Swagger and
+API routes are `/<profile>/` and `/<profile>/redfish/v1/` respectively.
 
 Each container runs as UID/GID 10001, with a read-only filesystem, no Linux
-capabilities, no privilege escalation, a 128-process limit, 1 CPU and 256 MiB
+capabilities, no privilege escalation, a 128-process limit, 1 CPU and 1 GiB
 memory. Restart policy is `unless-stopped`. JSON-file logs rotate at 10 MiB,
 keeping three files per container. There is no persistent application volume.
 
 ## Connect the existing HTTPS proxy
 
-Ports bind to `127.0.0.1` by default. On the same server, route a separate HTTPS
-hostname to each backend, for example Dell to `http://127.0.0.1:8001`. Preserve
-paths and query strings, including `/redfish/v1`, `/healthz`, `/readyz` and
-`/_mock`. Authenticate users through the simulator's Basic or session mechanism.
-Do not rewrite JSON links or strip `Authorization` / `X-Auth-Token` headers.
+The application binds its published port to `127.0.0.1` by default. Configure
+one HTTPS hostname and port 443 to forward **all paths unchanged** to
+`http://127.0.0.1:8000`. Proxy configuration is managed outside this project.
+No proxy configuration, domain or certificate is provisioned automatically. A containerized proxy
+must use the application service's reachable private address, not its own localhost.
+
+The application handles profile routing and URI adaptation. Do not strip
+`/dell`, `/hpe`, `/supermicro`, `/lenovo` or `/hpe-ilo4`, rewrite JSON in the proxy,
+or strip `Authorization` / `X-Auth-Token`. Authenticate through Basic or sessions.
+Swagger and static resources are bundled and served under each profile prefix.
 
 For a remote proxy, set `REDFISH_BIND_ADDRESS` to the server's private interface
 address and restrict access to the proxy through your network controls. Backend
@@ -147,23 +153,24 @@ server's 10-second body deadline and 15-second shutdown grace period.
 
 ## Supervise and operate
 
-- `GET /healthz` is a public liveness check. `GET /readyz` is a public readiness
-  check and is healthy only after initialization. Readiness is withdrawn when
+- `GET /healthz` is a public aggregate liveness check. `GET /readyz` is a public readiness
+  check and is healthy only after all five profiles initialize. Per-profile probes
+  are available at `/<profile>/healthz` and `/<profile>/readyz`. Readiness is withdrawn when
   shutdown starts; the listener then closes.
 - Hardware `Warning` / `Critical` values are simulated dataset states, not
   service health. Do not restart a container merely because a scenario has a fault.
 - Request logs contain timestamp, profile, method, sanitized path, status and
   duration. Query strings, bodies, credentials, tokens and session IDs are omitted.
-- The transport permits at most 64 concurrent connections/tasks per profile;
+- The shared transport permits at most 320 concurrent connections/tasks;
   overload receives `503` and recovers as capacity frees. Bodies over 1 MiB receive
   `413`; incomplete bodies time out after 10 seconds with `408`.
 - SIGTERM drains in-flight requests for up to 15 seconds; Compose allows 20 seconds.
-  There is exactly one worker per profile. Do not scale replicas behind a shared
+  There is exactly one worker serving all profiles. Do not scale replicas behind a shared
   hostname: each replica would have independent sessions and mutable state.
 
 ```sh
 docker compose --env-file .env.production -f compose.production.yaml logs --tail=100
-curl --fail http://127.0.0.1:8001/readyz
+curl --fail http://127.0.0.1:8000/readyz
 docker stats --no-stream
 ```
 
@@ -188,3 +195,37 @@ or changes they need. Restarts reload the baseline; `POST /_mock/reset` also
 restores the baseline and revokes sessions. There is no state migration or
 backup to restore. Rotating a secret requires recreating the containers with
 the new secret file and re-authenticating clients.
+
+## Migration from separate profile ports
+
+This changes the Compose topology and default container command. Preserve your
+secret, credentials and image/version settings. Stop the old Compose project
+using its original configuration, including optional services, before installing
+the new configuration:
+
+```sh
+# Run with the OLD Compose file still present; state and sessions will be lost.
+docker compose --env-file .env.production -f compose.production.yaml --profile extras down
+# Install the new delivery, then start its single service.
+docker compose --env-file .env.production -f compose.production.yaml up -d --wait --remove-orphans
+```
+
+Replace per-profile `REDFISH_*_PORT` settings with `REDFISH_PORT=8000`; the old
+port variables no longer configure this Compose file. Remove obsolete proxy
+routes and update client targets:
+
+| Old local endpoint | New local base URL |
+|---|---|
+| `http://127.0.0.1:8001` | `http://127.0.0.1:8000/dell` |
+| `http://127.0.0.1:8002` | `http://127.0.0.1:8000/hpe` |
+| `http://127.0.0.1:8003` | `http://127.0.0.1:8000/supermicro` |
+| `http://127.0.0.1:8004` | `http://127.0.0.1:8000/lenovo` |
+| `http://127.0.0.1:8005` | `http://127.0.0.1:8000/hpe-ilo4` |
+
+The bundled collector accepts a profile base URL and rejects links to another
+profile, including on the same origin. Clients that hard-code `/redfish/v1/`
+at the domain root require adaptation or a legacy `--vendor` instance.
+Bare CLI defaults and the `--vendor`/`--fleet` modes retain their earlier behavior.
+A process restart now resets all five profiles; a profile's `/_mock/reset` still
+resets only that profile. Rollback requires the previous Compose file and image,
+followed by restoring the previous proxy/client addresses. No state migration exists.

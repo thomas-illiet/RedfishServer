@@ -21,8 +21,8 @@ modules are omitted. JSON and XML results are written under `reports/`.
 the two coverage gates.
 
 `make verify` adds runtime dependency auditing, builds both Linux architectures,
-scans the exact image archives, and runs isolated production Compose instances.
-It checks all five profiles, HTTPS proxying, clean shutdown and 20 concurrent
+scans the exact image archives, and runs an isolated production Compose container.
+It checks all five prefixes on one HTTPS endpoint, proxying, clean shutdown and 20 concurrent
 clients per profile for 60 seconds. `make release` performs verification
 and packages only those exact validated images, source files and reports.
 See [production.md](production.md) for prerequisites and release contents.
@@ -37,6 +37,8 @@ src/redfish_mock/
   constants.py        Service URIs, supported profiles and fixture location
   engine/             BMC coordinator, fixtures, sessions, resources, writes, actions
   server/             ASGI, Uvicorn lifecycle and JSON logging
+  openapi/            Profile-specific descriptions sharing engine capability rules
+  _static/            Offline Swagger UI, initializer, styles and upstream notices
   monitoring/         Sensor enrichment, power, health and scenarios
   collector/          HTTP client, resource discovery and KPIs
   contracts.py        Vendor-specific corrections and writable fields
@@ -50,7 +52,7 @@ scripts/smoke.py      Explicit disposable-target checks that reset mock state
 scripts/coverage_gate.py   Independent line and branch coverage thresholds
 scripts/structure_gate.py  Docstrings and module-size enforcement
 docs/                 Guides, provenance, license and editable diagrams
-compose.yaml          Three main profiles and two optional profiles
+compose.yaml          One container serving all five profiles
 Dockerfile            Installs the same package into the container runtime
 ```
 
@@ -80,8 +82,8 @@ are all checked.
 
 ```sh
 uv sync --frozen
-uv run --frozen redfish-mock --fleet
-uv run --frozen redfish-monitor --url http://127.0.0.1:8001
+uv run --frozen redfish-mock --multi-profile --port 8000
+uv run --frozen redfish-monitor --url http://127.0.0.1:8000/dell
 uv run --frozen python -m pytest
 make build
 ```
@@ -150,6 +152,29 @@ A new reading must specify its unit, availability, thresholds, component and
 provenance. A `null` or missing reading must not arbitrarily become zero.
 A counter must not decrease within a scenario. An unimplemented action must
 remain explicitly unimplemented.
+
+## Maintain the interactive API contract
+
+`openapi/` builds the specification from `MockBMC.original` and shared engine
+capabilities. Do not generate examples from mutable resources or configured
+credentials. For a new write/action, update its request/response description and
+tests alongside the engine. Keep unsupported actions marked as 501-only.
+`openapi-spec-validator` is a development-only dependency.
+
+Swagger UI is pinned to 5.34.1. To update it, download `swagger-ui-dist` from
+the versioned npm tarball in `_static/swagger-ui/manifest.json`, verify the
+published integrity value, and retain the required JS/CSS, license and notices.
+Record new file SHA-256 values in that manifest. Package tests verify these
+hashes; browser checks must confirm that no external requests or persisted
+authorization are introduced. The initializer and banner remain local files.
+The Swagger description includes `_static/redfish-fake-banner.svg`, a native
+vector illustration inspired by the README mascot, using Swagger's gray/green
+palette and a **Fake** badge. Preserve its responsive `viewBox` and vector shapes;
+do not embed raster images. The page has no separate header above Swagger.
+
+The documentation HTTP tests cover all five profiles, normal/raw modes,
+custom baselines, authentication, HEAD, and isolation from simulation state.
+Delivery smoke tests also check the page, OpenAPI and assets under each profile prefix.
 
 ## Maintain the documentation
 

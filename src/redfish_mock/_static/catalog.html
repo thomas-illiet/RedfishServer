@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RedfishServer — The Mock Lab</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root { color-scheme: light; --ink: #3b4151; --green: #49cc90; --coral: #f58b70; --paper: #f7f8f2; font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+    * { box-sizing: border-box; }
+    body { margin: 0; background-image: radial-gradient(#d9dfd4 .9px, transparent .9px); background-size: 24px 24px; }
+    a { color: inherit; text-underline-offset: 4px; }
+    a:focus-visible { outline: 3px solid #227c55; outline-offset: 5px; }
+    .page { max-width: 1180px; margin: auto; padding: 30px 36px 24px; }
+    .topbar, .brand, .lab-label { display: flex; align-items: center; }
+    .topbar { justify-content: space-between; gap: 20px; }
+    .brand { gap: 12px; font-size: 21px; font-weight: 800; letter-spacing: -.7px; }
+    .brand-icon { width: 39px; height: 39px; padding: 7px; border: 2px solid var(--ink); border-radius: 11px; background: var(--coral); transform: rotate(-7deg); }
+    .lab-label { gap: 8px; font: 700 11px/1.4 ui-monospace, monospace; letter-spacing: 1.5px; }
+    .lab-label svg { width: 19px; height: 19px; }
+    .hero { display: grid; grid-template-columns: 1.08fr 1fr; align-items: center; gap: 16px; padding: 36px 0 44px; }
+    .eyebrow, .kicker { font: 700 11px/1.5 ui-monospace, monospace; letter-spacing: 1.5px; }
+    .eyebrow { display: inline-block; background: #e5efdf; border: 1px solid #b5c8af; padding: 7px 11px; border-radius: 5px; }
+    h1 { margin: 18px 0 22px; font-size: clamp(39px, 5.1vw, 64px); line-height: 1.09; letter-spacing: -3px; font-weight: 850; }
+    h1 span { position: relative; display: inline-block; z-index: 0; }
+    h1 span::after { position: absolute; content: ""; height: 17%; background: var(--green); left: -3px; right: -3px; bottom: 3px; transform: rotate(-1.4deg); z-index: -1; border-radius: 3px; }
+    .intro { font-size: 15px; line-height: 1.8; max-width: 470px; margin: 0 0 26px; }
+    .intro strong { font-weight: 600; }
+    .meet-link { display: inline-flex; gap: 28px; align-items: center; background: var(--ink); border: 2px solid var(--ink); color: white; text-decoration: none; font-size: 14px; font-weight: 700; padding: 13px 18px; border-radius: 8px; box-shadow: 4px 4px 0 var(--coral); transition: transform .15s, box-shadow .15s; }
+    .meet-link:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--coral); }
+    .hero-art { position: relative; margin: 0; }
+    .mascot-art { display: block; width: 100%; height: auto; }
+    .stamp { position: absolute; top: 9%; right: 0; transform: rotate(8deg); text-align: center; border: 2px solid var(--ink); background: var(--green); border-radius: 9px; padding: 10px 13px; box-shadow: 3px 3px 0 var(--ink); }
+    .stamp strong { display: block; font-size: 22px; letter-spacing: -.7px; }
+    .stamp span { font: 700 8px/1.5 ui-monospace, monospace; letter-spacing: .7px; }
+    figcaption { text-align: center; margin-top: -8px; font: 11px/1.5 ui-monospace, monospace; color: #687385; }
+    .bubble { animation: drift 5s ease-in-out infinite; }
+    .bubble:nth-child(2n) { animation-delay: -2.5s; }
+    @keyframes drift { 50% { transform: translateY(-7px); } }
+    .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; border-top: 2px solid var(--ink); padding-top: 23px; margin-bottom: 22px; }
+    .kicker { margin: 0 0 6px; color: #687385; }
+    h2 { font-size: 29px; line-height: 1.2; letter-spacing: -1px; margin: 0; }
+    .profile-count { white-space: nowrap; border: 1px solid #c6d2c0; border-radius: 100px; padding: 7px 11px; background: #eff4e9; font: 11px/1.4 ui-monospace, monospace; }
+    .profiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+    .profile-card { background: #fffefb; border: 2px solid var(--ink); border-radius: 12px; box-shadow: 4px 4px 0 #d4dfcc; overflow: hidden; }
+    .rack-strip { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 2px solid var(--ink); background: #edf0e9; }
+    .rack-vents { width: 30px; height: 14px; background: repeating-linear-gradient(90deg, #9ca797 0 2px, transparent 2px 6px); }
+    .unit { font: 11px/1 ui-monospace, monospace; letter-spacing: 1px; }
+    .mock-label { margin-left: auto; display: flex; align-items: center; gap: 6px; font: 700 10px/1 ui-monospace, monospace; }
+    .mock-label i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 2px #d4e9d6; }
+    .card-content { padding: 21px 21px 18px; }
+    code { font-size: 11px; background: #f0f2ec; border: 1px solid #dce2d7; padding: 3px 6px; border-radius: 4px; color: #596550; }
+    h3 { font-size: 23px; line-height: 1.25; letter-spacing: -.6px; margin: 12px 0 6px; }
+    .card-content p { color: #687385; font-size: 13px; line-height: 1.5; margin: 0 0 20px; }
+    .swagger-link { display: flex; justify-content: space-between; align-items: center; background: #c4efd8; border: 1.5px solid var(--ink); border-radius: 6px; padding: 10px 12px; font-size: 13px; font-weight: 750; text-decoration: none; transition: background .15s; }
+    .swagger-link:hover { background: var(--green); }
+    .swagger-link span { font-size: 19px; line-height: 1; }
+    .api-links { display: flex; align-items: center; gap: 10px; margin-top: 15px; font-size: 11px; }
+    .api-links a { text-decoration-color: #b5c0ae; }
+    .api-links a:hover { text-decoration-color: var(--ink); }
+    .api-links span { color: #b3bdac; }
+    .lab-note { display: flex; flex-direction: column; justify-content: center; padding: 25px 28px; background: #edf2e6; border: 2px dashed #a7b69b; border-radius: 12px; }
+    .note-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .note-heading svg { width: 28px; height: 28px; transform: rotate(-12deg); }
+    .note-heading span { font: 700 9px/1.5 ui-monospace, monospace; letter-spacing: 1px; }
+    .lab-note h3 { margin: 0 0 11px; font-size: 25px; line-height: 1.15; }
+    .lab-note p { font-size: 12px; line-height: 1.7; margin: 0; color: #5b6754; max-width: 260px; }
+    footer { display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid #d4ddce; margin-top: 34px; padding-top: 18px; color: #687385; font: 10px/1.7 ui-monospace, monospace; }
+    @media (max-width: 900px) {
+      .page { padding: 26px; } h1 { font-size: 45px; letter-spacing: -2px; }
+      .profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stamp { padding: 8px; } .stamp strong { font-size: 18px; } .stamp span { font-size: 7px; }
+      .intro { font-size: 14px; } .eyebrow { font-size: 9px; letter-spacing: .8px; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 23px 20px; } .brand { font-size: 18px; } .brand-icon { width: 34px; height: 34px; }
+      .lab-label { font-size: 8px; letter-spacing: .8px; } .lab-label svg { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 32px 0 30px; gap: 18px; }
+      h1 { font-size: clamp(39px, 9vw, 52px); letter-spacing: -2px; }
+      .hero-art { max-width: 390px; width: 100%; justify-self: center; }
+      .stamp { right: 6px; top: 7%; } .stamp strong { font-size: 22px; }
+      .profiles { grid-template-columns: 1fr; gap: 18px; }
+      .section-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+      h2 { font-size: 27px; } .profile-count { font-size: 10px; }
+      .card-content { padding: 22px; } .api-links { font-size: 12px; }
+      .lab-note { padding: 26px; } footer { flex-direction: column; gap: 5px; font-size: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M8 16C13 6 24 7 29 16c-5 9-16 10-21 0L2 22V10Z" fill="none" stroke="#3b4151" stroke-width="2.5" stroke-linejoin="round"/><circle cx="23" cy="14" r="1.8" fill="#3b4151"/></svg>
+        RedfishServer
+      </div>
+      <div class="lab-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 15-6 6m8-8 3-3m0-7a6 6 0 0 0-5 8l-7 7a3 3 0 0 0 4 4l7-7a6 6 0 0 0 8-7l-4 4-4-4 4-4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg> THE MOCK LAB</div>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="welcome-title">
+        <div>
+          <span class="eyebrow">HARDWARE SIMULATION PLAYGROUND</span>
+          <h1 id="welcome-title">Serious testing.<br><span>Fishy servers.</span></h1>
+          <p class="intro"><strong>Pick a server. Poke its API. Make a little chaos.</strong><br>Five pretend BMCs, ready for your next experiment.</p>
+          <a class="meet-link" href="#profiles">Meet the test crew <span aria-hidden="true">↓</span></a>
+        </div>
+        <figure class="hero-art">
+          <svg class="mascot-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-labelledby="mechanic-title">
+<title id="mechanic-title">The Redfish technician, a cheerful fish with glasses, a cap and a wrench, tending a pretend server.</title>
+  <defs>
+    <pattern id="vents" width="10" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="1.7" fill="#b5bec9"/>
+    </pattern>
+    <symbol id="rack" viewBox="0 0 172 190">
+      <rect x="2" y="2" width="168" height="184" rx="10" fill="#e8ecf0" stroke="#687385" stroke-width="3"/>
+      <path d="M16 13h140" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <g fill="#fff" stroke="#a4aebc" stroke-width="2">
+        <rect x="14" y="23" width="144" height="43" rx="5"/>
+        <rect x="14" y="77" width="144" height="43" rx="5"/>
+        <rect x="14" y="131" width="144" height="43" rx="5"/>
+      </g>
+      <g fill="url(#vents)">
+        <rect x="24" y="32" width="76" height="25"/>
+        <rect x="24" y="86" width="76" height="25"/>
+        <rect x="24" y="140" width="76" height="25"/>
+      </g>
+      <g fill="#49cc90">
+        <circle cx="119" cy="45" r="5"/>
+        <circle cx="119" cy="99" r="5"/>
+        <circle cx="119" cy="153" r="5"/>
+      </g>
+      <g fill="#c5cdd6">
+        <circle cx="140" cy="45" r="4"/>
+        <circle cx="140" cy="99" r="4"/>
+        <circle cx="140" cy="153" r="4"/>
+      </g>
+      <path d="M26 188v2m120-2v2" stroke="#687385" stroke-width="6"/>
+    </symbol>
+  </defs>
+<path d="M94 182C67 99 163 35 259 59c100-33 205-8 243 83 80 34 107 130 32 197-44 63-144 100-241 66-98 33-223-11-226-102-24-34-21-81 27-121Z" fill="#e1efdf"/>
+<ellipse cx="319" cy="427" rx="253" ry="15" fill="#d6e5d1"/>
+<g fill="none" stroke="#49cc90" stroke-width="3">
+<circle class="bubble" cx="83" cy="113" r="13"/><circle class="bubble" cx="55" cy="151" r="6"/>
+<circle class="bubble" cx="420" cy="74" r="9"/><circle class="bubble" cx="587" cy="262" r="9"/>
+</g>
+<g stroke="#96b597" stroke-width="3" stroke-linecap="round"><path d="M113 367v14m-7-7h14M549 335v14m-7-7h14"/></g>
+<use href="#rack" x="427" y="221" width="172" height="190"/>
+  <g transform="translate(0 25)" stroke="#3b4151" stroke-linejoin="round">
+    <!-- The fish keeps the README's playful identity in a simple vector style. -->
+    <path d="M165 222C118 211 84 173 51 167c-5 37 15 67 43 85-31 6-49 25-55 49 39 26 83 25 131 3z"
+          fill="#ef765d" stroke-width="5"/>
+    <path d="M66 183c20 33 43 55 83 66M56 292c34-3 59-5 94-27" fill="none" stroke="#ffb19c" stroke-width="6"/>
+    <path d="M171 161c-16-26-14-58 4-85 26 1 50 25 61 55" fill="#ef765d" stroke-width="5"/>
+    <path d="M225 335c-15 19-19 40-7 55 31-4 65-21 87-53" fill="#ef765d" stroke-width="5"/>
+    <path d="M153 190c43-61 158-67 215-19 32 27 45 53 54 83 9 32-11 65-43 86-53 34-147 30-198-7-49-36-63-95-28-143z"
+          fill="#f58b70" stroke-width="5"/>
+    <path d="M174 286c37 52 115 65 170 40 19-9 37-20 52-38-7 35-47 58-91 61-64 7-112-12-131-63z"
+          fill="#ffd2bb" stroke="none"/>
+    <path d="M176 272c-30 2-49 20-50 44 25 8 50-1 67-23" fill="#ef765d" stroke-width="4"/>
+    <path d="M163 140c-4-39 28-83 71-90 65-13 122 23 133 73l-83 48z"
+          fill="#687385" stroke-width="5"/>
+    <path d="M163 140c43-30 120-45 174-28 31 9 49 23 52 39-36 18-76 24-119 21-37-3-78-14-107-32z"
+          fill="#3b4151" stroke-width="5"/>
+    <path d="M205 81c15-16 44-23 68-21" fill="none" stroke="#a7b1bf" stroke-width="5" stroke-linecap="round"/>
+    <g stroke="#fff" stroke-width="8" stroke-linecap="round" fill="none">
+      <path d="m251 87 29 29m-38-40 5 14 13 4m14 20 13 4 5 14"/>
+      <path d="m282 81-35 39"/>
+    </g>
+    <g fill="#fff" stroke-width="4">
+      <ellipse cx="263" cy="225" rx="40" ry="49"/>
+      <ellipse cx="351" cy="215" rx="35" ry="44"/>
+    </g>
+    <g fill="#3b4151" stroke="none">
+      <ellipse cx="275" cy="231" rx="15" ry="23"/>
+      <ellipse cx="363" cy="220" rx="13" ry="21"/>
+    </g>
+    <g fill="#fff" stroke="none">
+      <circle cx="280" cy="222" r="6"/>
+      <circle cx="367" cy="211" r="5"/>
+    </g>
+    <g fill="none" stroke-width="8">
+      <rect x="216" y="181" width="91" height="87" rx="21"/>
+      <rect x="319" y="174" width="77" height="79" rx="20"/>
+      <path d="M307 204h12m-103 4-43-13"/>
+    </g>
+    <path d="M303 290c19 12 45 11 62-2-4 25-32 34-50 22" fill="#3b4151" stroke-width="3"/>
+    <path d="M315 294c11 3 27 2 37-1" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <path d="M386 287c24-15 42-15 59-7-9 21-28 34-49 34" fill="#f58b70" stroke-width="4"/>
+    <path d="m425 302 21-36m-3-20c-8 4-11 13-6 19 6 7 16 4 21-3l-9 1-5-7z"
+          fill="#a7b1bf" stroke-width="4"/>
+  </g>
+
+</svg>
+          <div class="stamp"><strong>100% FAKE</strong><span>EXCELLENT AT PRETENDING</span></div>
+          <figcaption>Your friendly neighborhood mock mechanic.</figcaption>
+        </figure>
+      </section>
+      <section id="profiles" aria-labelledby="profiles-title">
+        <div class="section-heading">
+          <div><p class="kicker">PICK YOUR LAB PARTNER</p><h2 id="profiles-title">The usual suspects.</h2></div>
+          <span class="profile-count">5 profiles · 1 playground</span>
+        </div>
+        <div class="profiles">{{cards}}
+          <aside class="lab-note" aria-labelledby="note-title">
+            <div class="note-heading"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M19 4a8 8 0 0 0-7 11L3 24a3.5 3.5 0 0 0 5 5l9-9A8 8 0 0 0 28 9l-6 6-5-5 6-6Z" fill="#f58b70" stroke="#3b4151" stroke-width="2" stroke-linejoin="round"/></svg><span>A NOTE FROM THE MECHANIC</span></div>
+            <h3 id="note-title">Permission<br>to experiment.</h3>
+            <p>Each profile has its own state and sessions. Everything lives in memory. Restart the app for a fresh start.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <footer><span>Synthetic data. Real requests. No actual servers were harmed.</span><span>RedfishServer / proudly pretending.</span></footer>
+  </div>
+</body>
+</html>

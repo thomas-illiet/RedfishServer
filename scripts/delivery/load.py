@@ -41,7 +41,7 @@ def load_test(clients: dict[str, Client], duration: int = 60, concurrency: int =
                 try:
                     connection.request(
                         "GET",
-                        paths[len(latencies) % len(paths)],
+                        client.endpoint.path(paths[len(latencies) % len(paths)]),
                         headers={"Authorization": client.auth},
                     )
                     response = connection.getresponse()

@@ -12,6 +12,10 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+from redfish_mock.collector.client import _NoRedirect
+from redfish_mock.urls import Endpoint
+from scripts.documentation_check import check_documentation
+
 
 class Client:
     """Drive authenticated HTTP requests against a disposable mock server."""
@@ -19,18 +23,21 @@ class Client:
     def __init__(self, url: str, username: str, password: str, ca_file: str | None = None) -> None:
         """Configure the target origin, credentials and optional trusted CA certificate."""
         self.ca_file = ca_file
-        self.url = url.rstrip("/")
+        self.endpoint = Endpoint(url)
+        self.url = self.endpoint.base
         self.auth = "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
         context = ssl.create_default_context(cafile=ca_file)
         self.opener = urllib.request.build_opener(
-            urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=context)
+            urllib.request.ProxyHandler({}),
+            _NoRedirect(),
+            urllib.request.HTTPSHandler(context=context),
         )
 
     def request(self, method: str, path: str, data: dict | None = None, status: int = 200) -> Any:
         """Send an HTTP request and decode its response while closing the connection."""
         payload = json.dumps(data).encode() if data is not None else None
         req = urllib.request.Request(
-            self.url + path,
+            self.endpoint.url(path),
             payload,
             {"Authorization": self.auth, "Content-Type": "application/json"},
             method=method,
@@ -44,6 +51,7 @@ class Client:
 
 def check_profile(vendor: str, client: Client) -> dict[str, Any]:
     """Exercise discovery, authentication and reset behavior on a disposable profile."""
+    check_documentation(vendor, client)
     if client.request("GET", "/healthz")["profile"] != vendor:
         raise RuntimeError("Unexpected BMC profile")
     if not client.request("GET", "/readyz")["ready"]:

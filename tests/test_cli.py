@@ -19,7 +19,15 @@ PROJECT = Path(__file__).resolve().parents[1]
 
 
 @pytest.mark.parametrize(
-    "args", [["--port", "0"], ["--fleet", "--port", "65534"], ["--delay-ms", "-1"], ["--cert", "x"]]
+    "args",
+    [
+        ["--port", "0"],
+        ["--fleet", "--port", "65534"],
+        ["--delay-ms", "-1"],
+        ["--cert", "x"],
+        ["--multi-profile", "--fleet"],
+        ["--multi-profile", "--vendor", "dell"],
+    ],
 )
 def test_cli_rejects_invalid_configuration(args):
     """Verify cli rejects invalid configuration."""
@@ -40,7 +48,8 @@ def test_bad_profiles_and_missing_fixtures(tmp_path):
         MockBMC("dell").handle("GET", "http://evil.test/redfish/v1", {})
 
 
-def test_cli_starts_and_stops_a_real_process():
+@pytest.mark.parametrize("multi", [False, True])
+def test_cli_starts_and_stops_a_real_process(multi):
     """Verify cli starts and stops a real process."""
     with socket.socket() as available:
         available.bind(("127.0.0.1", 0))
@@ -50,8 +59,7 @@ def test_cli_starts_and_stops_a_real_process():
             sys.executable,
             "-m",
             "redfish_mock",
-            "--vendor",
-            "supermicro",
+            *(["--multi-profile"] if multi else ["--vendor", "supermicro"]),
             "--port",
             str(port),
             "--quiet",
@@ -66,7 +74,7 @@ def test_cli_starts_and_stops_a_real_process():
         while time.monotonic() < deadline:
             try:
                 connection = http.client.HTTPConnection("127.0.0.1", port, timeout=1)
-                connection.request("GET", ROOT)
+                connection.request("GET", "/supermicro" + ROOT if multi else ROOT)
                 response = connection.getresponse()
                 body = json.loads(response.read())
                 connection.close()
@@ -82,3 +90,5 @@ def test_cli_starts_and_stops_a_real_process():
         stdout, stderr = process.communicate(timeout=10)
     assert process.returncode == 0, stderr
     assert f"http://127.0.0.1:{port}" in stdout
+    if multi:
+        assert len(stdout.splitlines()) == 5

@@ -75,9 +75,9 @@ DMTF. `CapacityMiB` is the capacity in GiB multiplied by 1,024.
 Examples:
 
 ```sh
-curl -u admin:admin 'http://127.0.0.1:8001/redfish/v1/Systems/System.Embedded.1/Processors?$expand=.'
-curl -u admin:admin 'http://127.0.0.1:8002/redfish/v1/Systems/1/Memory?$expand=.'
-curl -u admin:admin 'http://127.0.0.1:8003/redfish/v1/Systems/1/Memory?$expand=.'
+curl -u admin:admin 'http://127.0.0.1:8000/dell/redfish/v1/Systems/System.Embedded.1/Processors?$expand=.'
+curl -u admin:admin 'http://127.0.0.1:8000/hpe/redfish/v1/Systems/1/Memory?$expand=.'
+curl -u admin:admin 'http://127.0.0.1:8000/supermicro/redfish/v1/Systems/1/Memory?$expand=.'
 ```
 
 ## Scope and verification

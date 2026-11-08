@@ -4,12 +4,18 @@
 
 ## Overview
 
-Each BMC is a `MockBMC` object served by a minimal `RedfishASGI` adapter
-and one Uvicorn worker. Multiple worker processes are intentionally unsupported
-because sessions and mutable state live in memory.
-With Docker, the three profiles run in separate containers. With `--fleet`,
-they share a Python process but retain independent servers, ports, locks,
-resources and sessions.
+Each BMC is an independent `MockBMC` object served by a `RedfishASGI` adapter.
+In `--multi-profile` mode, `ProfileRouter` selects the exact profile prefix and
+one Uvicorn worker serves all five adapters on a single port. State, sessions,
+locks and telemetry remain separate. Docker uses this mode by default.
+Multiple worker processes or replicas are unsupported because state is in memory.
+The legacy `--vendor` and three-port `--fleet` modes remain available.
+
+The namespace adapter removes the profile prefix before engine dispatch and
+adds it to known URI fields and location headers in responses. Original fixture
+files and internal resource keys remain unchanged. OpenAPI uses one server
+prefix with canonical operation paths. The scoped URL resolver used by collectors
+and delivery checks prevents double prefixes and cross-profile credential use.
 
 ![Loading data and processing requests](assets/architecture.svg)
 
@@ -27,6 +33,7 @@ resources and sessions.
 | [`engine/actions.py`](../src/redfish_mock/engine/actions.py), [`controls.py`](../src/redfish_mock/engine/controls.py) | Power/media actions, monitoring scenarios and explicit mock overrides |
 | [`models.py`](../src/redfish_mock/models.py), [`constants.py`](../src/redfish_mock/constants.py) | Shared payload types, `Result`, `RedfishError`, URIs and fixture location |
 | [`server/`](../src/redfish_mock/server/) | ASGI parsing and responses, Uvicorn lifecycle and structured logging |
+| [`openapi/`](../src/redfish_mock/openapi/), [`_static/`](../src/redfish_mock/_static/) | Baseline API contract and bundled Swagger UI at the instance root |
 | [`contracts.py`](../src/redfish_mock/contracts.py), [`inventory.py`](../src/redfish_mock/inventory.py) | Vendor corrections, writable fields and typed CPU/DIMM configurations |
 | [`monitoring/`](../src/redfish_mock/monitoring/) | Resource enrichment, power distribution, health aggregation and named scenarios |
 | [`simulation.py`](../src/redfish_mock/simulation.py) | Seeded telemetry over elapsed time and trailing power windows |
@@ -73,7 +80,7 @@ before any sessions are created:
 
 Added resources cover CPU/DIMM inventories and memory metrics for the three
 main profiles, plus a Supermicro log collection. Lenovo and HPE iLO 4 remain
-optional regression profiles.
+regression profiles enabled by default.
 
 `POST /_mock/reset` copies the baseline, resets sequence positions, removes
 sessions and restarts the `baseline` scenario. Restarting the process reloads
@@ -87,7 +94,7 @@ conditions are met; see [inventory.md](inventory.md).
 
 ## Request processing
 
-1. Uvicorn parses HTTP/1.1 with h11 and enforces a concurrency limit of 64.
+1. Uvicorn parses HTTP/1.1 with h11 and enforces a shared concurrency limit of 320 (64 in legacy modes).
    The adapter reads JSON bodies within 10 seconds, limits them to 1 MiB and
    rejects chunked bodies. Blocking engine operations run off the event loop.
 2. The engine normalizes the path and acquires the instance lock.
@@ -97,13 +104,14 @@ conditions are met; see [inventory.md](inventory.md).
    has started.
 5. The engine performs the read, expansion, permitted write, action or
    mock control operation.
-6. The response is serialized as JSON; the transport adds headers including
+6. Profile-local URI fields are prefixed without modifying engine state; the response is serialized as JSON; the transport adds headers including
    `OData-Version: 4.0`, `Cache-Control: no-store` and the body length.
 
 The lock protects mutations and resource reads. It does not create a
 transaction spanning multiple collector requests: two reads across an
 interval boundary may observe two different samples. Resource ETags are
-based on their JSON content.
+based on canonical engine JSON; namespace translation preserves these opaque
+version identifiers, so conditional PATCH still checks the same engine version.
 
 ## Availability and logs
 

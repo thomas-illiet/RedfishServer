@@ -58,9 +58,9 @@ PSU thresholds are also simulation parameters.
 From the project directory:
 
 ```sh
-python3 -m redfish_mock.monitor --url http://127.0.0.1:8001
-python3 -m redfish_mock.monitor --url http://127.0.0.1:8002
-python3 -m redfish_mock.monitor --url http://127.0.0.1:8003
+python3 -m redfish_mock.monitor --url http://127.0.0.1:8000/dell
+python3 -m redfish_mock.monitor --url http://127.0.0.1:8000/hpe
+python3 -m redfish_mock.monitor --url http://127.0.0.1:8000/supermicro
 ```
 
 The example performs only GET requests on Redfish resources, following links.
@@ -80,7 +80,7 @@ server. Failed collection returns a nonzero exit code.
 Compose listens locally by default. For a collector on another lab machine,
 set `REDFISH_BIND_ADDRESS` in `.env` to the server machine's LAN address
 (or `0.0.0.0`), then rerun `docker compose up -d --wait`. The collector then
-uses `http://ADDRESS:8001`, `:8002` or `:8003`. Python mode also accepts
+uses `http://ADDRESS:8000/dell`, `/hpe` or `/supermicro`. Python mode also accepts
 `--host 0.0.0.0`, with `--cert` and `--key` for HTTPS. The currently started
 ports remain bound to `127.0.0.1`.
 
@@ -105,10 +105,10 @@ to the mock; the resulting readings remain available in Redfish resources:
 
 ```sh
 curl -u admin:admin -H 'Content-Type: application/json' \
-  -d '{"Scenario":"overheat"}' http://127.0.0.1:8001/_mock/scenario
-python3 -m redfish_mock.monitor --url http://127.0.0.1:8001
+  -d '{"Scenario":"overheat"}' http://127.0.0.1:8000/dell/_mock/scenario
+python3 -m redfish_mock.monitor --url http://127.0.0.1:8000/dell
 curl -u admin:admin -H 'Content-Type: application/json' \
-  -d '{"Scenario":"baseline"}' http://127.0.0.1:8001/_mock/scenario
+  -d '{"Scenario":"baseline"}' http://127.0.0.1:8000/dell/_mock/scenario
 ```
 
 | Scenario | Monitoring state |
@@ -175,10 +175,10 @@ native energy counter or persistent history.
 
 ```sh
 # Replay the same values at the same elapsed time, with a 2-second step:
-python3 -m redfish_mock --fleet --metric-interval 2 --seed 42
+python3 -m redfish_mock --multi-profile --port 8000 --metric-interval 2 --seed 42
 
 # Keep the fixed values and scenarios from the previous mode:
-python3 -m redfish_mock --fleet --static-metrics
+python3 -m redfish_mock --multi-profile --port 8000 --static-metrics
 ```
 
 The step accepts an integer from 1 to 60 seconds. With Docker, set

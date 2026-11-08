@@ -8,6 +8,11 @@ bounded ranges. The engine uses Python 3.14 with Uvicorn for its ASGI transport.
 The data is **synthetic**. The targeted contracts are based on vendor
 documentation; no validation on real hardware is claimed.
 
+Open [Dell](http://127.0.0.1:8000/dell/), [HPE](http://127.0.0.1:8000/hpe/) or
+[Supermicro](http://127.0.0.1:8000/supermicro/) for offline, interactive Swagger documentation.
+The [catalogue](http://127.0.0.1:8000/) also links Lenovo and HPE iLO 4.
+Each profile exposes `/<profile>/openapi.json`; see the [API guide](api.md).
+
 ## Reading guide
 
 | Need | Guide |
@@ -29,20 +34,20 @@ From the project root, with Docker Compose available:
 
 ```sh
 docker compose up --build -d --wait
-curl -u admin:admin http://127.0.0.1:8001/redfish/v1/Systems
-uv run --frozen python -m redfish_mock.monitor --url http://127.0.0.1:8001
+curl -u admin:admin http://127.0.0.1:8000/dell/redfish/v1/Systems
+uv run --frozen python -m redfish_mock.monitor --url http://127.0.0.1:8000/dell
 ```
 
 The last command requires Python locally. It displays a JSON snapshot of the
 KPIs; it does not install a Prometheus exporter or a dashboard.
 
-| Active profile | Local port | Model | CPU / RAM |
+| Active profile | Prefix (port 8000) | Model | CPU / RAM |
 |---|---|---|---|
-| `dell` | 8001 | PowerEdge R750 | 2 × Gold 6338 / 512 GiB |
-| `hpe` | 8002 | ProLiant DL380 Gen10 Plus | 2 × Silver 4314 / 256 GiB |
-| `supermicro` | 8003 | SYS-6019U-TR4 | 2 × Gold 6230 / 192 GiB |
+| `dell` | `/dell` | PowerEdge R750 | 2 × Gold 6338 / 512 GiB |
+| `hpe` | `/hpe` | ProLiant DL380 Gen10 Plus | 2 × Silver 4314 / 256 GiB |
+| `supermicro` | `/supermicro` | SYS-6019U-TR4 | 2 × Gold 6230 / 192 GiB |
 
-![Deployment of the three mocks and collector access](assets/deployment.svg)
+![One listener with five independent profiles](assets/deployment.svg)
 
 [Edit this diagram in Draw.io](assets/deployment.drawio).
 
@@ -59,9 +64,9 @@ trajectory. The `--static-metrics` mode keeps values fixed.
 The initial scenario deliberately includes faults: a `Warning` or `Critical`
 health status does not mean the mock process has failed. `GET /healthz` checks
 the HTTP service; Redfish fields describe **simulated** hardware health.
-`POST /_mock/reset` restores the profile and revokes its sessions.
+`POST /<profile>/_mock/reset` restores the profile and revokes its sessions.
 
-The optional Lenovo and HPE iLO 4 profiles are used for regression testing.
+The Lenovo and HPE iLO 4 profiles are used for regression testing.
 They do not include the CPU/RAM additions or monitoring simulation available
 in the three main profiles.
 

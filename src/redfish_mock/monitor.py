@@ -16,7 +16,7 @@ __all__ = ["RedfishClient", "main", "snapshot"]
 def main() -> None:
     """Collect and print per-server KPIs using the configured credentials."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--url", default="http://127.0.0.1:8001")
+    parser.add_argument("--url", default="http://127.0.0.1:8000/dell")
     parser.add_argument(
         "--ca-file", help="CA certificate for HTTPS; TLS verification stays enabled"
     )

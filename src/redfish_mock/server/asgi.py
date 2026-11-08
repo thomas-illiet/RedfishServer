@@ -11,7 +11,9 @@ from typing import Any
 
 from redfish_mock.engine import MockBMC, RedfishError, Result
 
+from .documentation import ASSET_PREFIX, ASSETS, Documentation
 from .logging import LOGGER
+from .namespace import external_payload, external_uri, override_body
 
 MAX_BODY = 1024 * 1024
 BODY_TIMEOUT = 10.0
@@ -24,13 +26,20 @@ class RedfishASGI:
     """Adapt asynchronous HTTP and lifespan events to a single stateful BMC."""
 
     def __init__(
-        self, bmc: MockBMC, *, delay: float = 0, body_timeout: float = BODY_TIMEOUT
+        self,
+        bmc: MockBMC,
+        *,
+        delay: float = 0,
+        body_timeout: float = BODY_TIMEOUT,
+        prefix: str = "",
     ) -> None:
         """Bind a BMC and configure response delay, body deadline and initial readiness."""
         self.bmc = bmc
         self.delay = delay
         self.body_timeout = body_timeout
         self.ready = False
+        self.prefix = prefix
+        self.documentation = Documentation(bmc, prefix=prefix)
 
     async def _body(self, scope: Scope, receive: Receive) -> dict:
         """Read a bounded JSON object after validating content type and request framing."""
@@ -87,6 +96,12 @@ class RedfishASGI:
         query = scope.get("query_string", b"").decode("latin-1")
         raw_target = raw_path + ("?" + query if query else "")
         started = time.monotonic()
+        document = self.documentation.lookup(scope["path"], method)
+        if document is not None:
+            status, encoded, headers_out = document
+            await self._send(send, method, status, encoded, headers_out)
+            self._log(method, scope["path"], status, started)
+            return
         try:
             if scope["path"].rstrip("/") == "/readyz" and method in ("GET", "HEAD"):
                 result = Result(
@@ -98,6 +113,8 @@ class RedfishASGI:
                 body = (
                     await self._body(scope, receive) if method in ("POST", "PATCH", "PUT") else None
                 )
+                if body is not None and scope["path"].rstrip("/") == "/_mock/overrides":
+                    body = override_body(body, self.prefix)
                 headers: dict[str, str] = {}
                 for key, value in scope["headers"]:
                     name = key.decode("latin-1").lower()
@@ -124,29 +141,42 @@ class RedfishASGI:
                 500, self.bmc.error_payload(RedfishError(500, "Internal mock server error."))
             )
         encoded = (
-            json.dumps(result.body, ensure_ascii=False).encode() if result.body is not None else b""
+            json.dumps(external_payload(result.body, self.prefix), ensure_ascii=False).encode()
+            if result.body is not None
+            else b""
         )
         headers_out = {
             "content-type": "application/json; charset=utf-8",
             "content-length": str(len(encoded)),
             "odata-version": "4.0",
             "cache-control": "no-store",
-            **{key.lower(): value for key, value in result.headers.items()},
+            **{
+                key.lower(): external_uri(value, self.prefix)
+                if key.lower() in ("location", "content-location")
+                else value
+                for key, value in result.headers.items()
+            },
         }
         if result.status in (408, 413, 415, 501):
             headers_out["connection"] = "close"
+        await self._send(send, method, result.status, encoded, headers_out)
+        self._log(method, scope["path"], result.status, started)
+
+    async def _send(
+        self, send: Send, method: str, status: int, encoded: bytes, headers: dict[str, str]
+    ) -> None:
+        """Send typed documentation or JSON API bytes while honoring HEAD and disconnects."""
         try:
             await send(
                 {
                     "type": "http.response.start",
-                    "status": result.status,
-                    "headers": [(k.encode(), v.encode()) for k, v in headers_out.items()],
+                    "status": status,
+                    "headers": [(k.encode(), v.encode()) for k, v in headers.items()],
                 }
             )
             await send({"type": "http.response.body", "body": b"" if method == "HEAD" else encoded})
         except OSError, ConnectionError:
             pass
-        self._log(method, scope["path"], result.status, started)
 
     async def _lifespan(self, receive: Receive, send: Send) -> None:
         """Update readiness as ASGI startup and shutdown events arrive."""
@@ -165,8 +195,11 @@ class RedfishASGI:
         """Log request timing and sanitized routes without credentials or session identifiers."""
         if "/SessionService/Sessions/" in path:
             path = "/redfish/v1/SessionService/Sessions/{id}"
+        elif path.startswith(ASSET_PREFIX):
+            path = path if path.removeprefix(ASSET_PREFIX) in ASSETS else ASSET_PREFIX + "{unknown}"
         elif path.rstrip("/") not in self.bmc.original and path not in (
             "/",
+            "/openapi.json",
             "/healthz",
             "/readyz",
             "/redfish",

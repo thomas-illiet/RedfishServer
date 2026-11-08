@@ -69,6 +69,9 @@ to customize profiles, work on a copy passed to `--mockups-dir`.
 
 ## License of imported files
 
+The following MIT notice applies to the rackhands fixtures. Swagger UI has its
+own license and provenance, recorded after this notice.
+
 ```text
 MIT License
 
@@ -92,3 +95,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## Swagger UI
+
+The offline documentation embeds **swagger-ui-dist 5.34.1**, from the
+[official Swagger UI release](https://github.com/swagger-api/swagger-ui/releases/tag/v5.34.1),
+commit `d3296954a6b813898d298815ac3e68daa1cf7408`.
+The source archive is the [versioned npm distribution](https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.34.1.tgz).
+
+The archive's published SHA-512 integrity was checked before extracting the
+bundled assets. The archive reference, integrity and per-file SHA-256 values are
+in `src/redfish_mock/_static/swagger-ui/manifest.json`. Files are distributed
+unchanged; the HTML page, initializer and supplemental CSS are local code.
+No npm installation or external CDN is required at runtime.
+
+Swagger UI is licensed under Apache-2.0. The full `LICENSE`, `NOTICE`, and
+bundled third-party `*.LICENSE.txt` notices are retained alongside the assets
+and included in the Python package and container. They can also be read through
+the registered `/assets/swagger-ui/LICENSE`, `/assets/swagger-ui/NOTICE`, and
+`/assets/swagger-ui/swagger-ui-bundle.js.LICENSE.txt` routes.

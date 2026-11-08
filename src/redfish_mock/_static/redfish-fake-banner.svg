@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 440" role="img" aria-labelledby="title description">
+  <title id="title">RedfishServer — Fake</title>
+  <desc id="description">A friendly red fish technician beside simulated servers. A green Fake badge identifies this test environment.</desc>
+  <defs>
+    <pattern id="vents" width="10" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="1.7" fill="#b5bec9"/>
+    </pattern>
+    <symbol id="rack" viewBox="0 0 172 190">
+      <rect x="2" y="2" width="168" height="184" rx="10" fill="#e8ecf0" stroke="#687385" stroke-width="3"/>
+      <path d="M16 13h140" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <g fill="#fff" stroke="#a4aebc" stroke-width="2">
+        <rect x="14" y="23" width="144" height="43" rx="5"/>
+        <rect x="14" y="77" width="144" height="43" rx="5"/>
+        <rect x="14" y="131" width="144" height="43" rx="5"/>
+      </g>
+      <g fill="url(#vents)">
+        <rect x="24" y="32" width="76" height="25"/>
+        <rect x="24" y="86" width="76" height="25"/>
+        <rect x="24" y="140" width="76" height="25"/>
+      </g>
+      <g fill="#49cc90">
+        <circle cx="119" cy="45" r="5"/>
+        <circle cx="119" cy="99" r="5"/>
+        <circle cx="119" cy="153" r="5"/>
+      </g>
+      <g fill="#c5cdd6">
+        <circle cx="140" cy="45" r="4"/>
+        <circle cx="140" cy="99" r="4"/>
+        <circle cx="140" cy="153" r="4"/>
+      </g>
+      <path d="M26 188v2m120-2v2" stroke="#687385" stroke-width="6"/>
+    </symbol>
+  </defs>
+
+  <rect x="1" y="1" width="1598" height="438" rx="12" fill="#fff" stroke="#d8dde3" stroke-width="2"/>
+  <path d="M27 413h1545" stroke="#e8ecf0" stroke-width="2"/>
+
+  <g transform="translate(16 12)" stroke="#3b4151" stroke-linejoin="round">
+    <!-- The fish keeps the README's playful identity in a simple vector style. -->
+    <path d="M165 222C118 211 84 173 51 167c-5 37 15 67 43 85-31 6-49 25-55 49 39 26 83 25 131 3z"
+          fill="#ef765d" stroke-width="5"/>
+    <path d="M66 183c20 33 43 55 83 66M56 292c34-3 59-5 94-27" fill="none" stroke="#ffb19c" stroke-width="6"/>
+    <path d="M171 161c-16-26-14-58 4-85 26 1 50 25 61 55" fill="#ef765d" stroke-width="5"/>
+    <path d="M225 335c-15 19-19 40-7 55 31-4 65-21 87-53" fill="#ef765d" stroke-width="5"/>
+    <path d="M153 190c43-61 158-67 215-19 32 27 45 53 54 83 9 32-11 65-43 86-53 34-147 30-198-7-49-36-63-95-28-143z"
+          fill="#f58b70" stroke-width="5"/>
+    <path d="M174 286c37 52 115 65 170 40 19-9 37-20 52-38-7 35-47 58-91 61-64 7-112-12-131-63z"
+          fill="#ffd2bb" stroke="none"/>
+    <path d="M176 272c-30 2-49 20-50 44 25 8 50-1 67-23" fill="#ef765d" stroke-width="4"/>
+    <path d="M163 140c-4-39 28-83 71-90 65-13 122 23 133 73l-83 48z"
+          fill="#687385" stroke-width="5"/>
+    <path d="M163 140c43-30 120-45 174-28 31 9 49 23 52 39-36 18-76 24-119 21-37-3-78-14-107-32z"
+          fill="#3b4151" stroke-width="5"/>
+    <path d="M205 81c15-16 44-23 68-21" fill="none" stroke="#a7b1bf" stroke-width="5" stroke-linecap="round"/>
+    <g stroke="#fff" stroke-width="8" stroke-linecap="round" fill="none">
+      <path d="m251 87 29 29m-38-40 5 14 13 4m14 20 13 4 5 14"/>
+      <path d="m282 81-35 39"/>
+    </g>
+    <g fill="#fff" stroke-width="4">
+      <ellipse cx="263" cy="225" rx="40" ry="49"/>
+      <ellipse cx="351" cy="215" rx="35" ry="44"/>
+    </g>
+    <g fill="#3b4151" stroke="none">
+      <ellipse cx="275" cy="231" rx="15" ry="23"/>
+      <ellipse cx="363" cy="220" rx="13" ry="21"/>
+    </g>
+    <g fill="#fff" stroke="none">
+      <circle cx="280" cy="222" r="6"/>
+      <circle cx="367" cy="211" r="5"/>
+    </g>
+    <g fill="none" stroke-width="8">
+      <rect x="216" y="181" width="91" height="87" rx="21"/>
+      <rect x="319" y="174" width="77" height="79" rx="20"/>
+      <path d="M307 204h12m-103 4-43-13"/>
+    </g>
+    <path d="M303 290c19 12 45 11 62-2-4 25-32 34-50 22" fill="#3b4151" stroke-width="3"/>
+    <path d="M315 294c11 3 27 2 37-1" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <path d="M386 287c24-15 42-15 59-7-9 21-28 34-49 34" fill="#f58b70" stroke-width="4"/>
+    <path d="m425 302 21-36m-3-20c-8 4-11 13-6 19 6 7 16 4 21-3l-9 1-5-7z"
+          fill="#a7b1bf" stroke-width="4"/>
+  </g>
+
+  <g fill="none" stroke="#49cc90" stroke-width="3">
+    <circle cx="107" cy="89" r="13"/>
+    <circle cx="70" cy="122" r="6"/>
+    <circle cx="447" cy="142" r="10"/>
+  </g>
+
+  <text x="520" y="148" fill="#3b4151" font-family="Arial, Helvetica, sans-serif" font-size="96" font-weight="700" letter-spacing="-4">RedfishServer</text>
+  <rect x="1265" y="77" width="213" height="84" rx="8" fill="#e8f7ef" stroke="#49cc90" stroke-width="3"/>
+  <text x="1371.5" y="135" text-anchor="middle" fill="#27865b" font-family="Arial, Helvetica, sans-serif" font-size="50" font-weight="700">Fake</text>
+
+  <g stroke="#687385" stroke-width="3">
+    <rect x="586" y="265" width="231" height="131" rx="10" fill="#e8ecf0"/>
+    <rect x="598" y="277" width="207" height="102" rx="5" fill="#3b4151" stroke="none"/>
+    <path d="M687 397v15m-42 1h87" fill="none" stroke-width="6" stroke-linecap="round"/>
+    <path d="m622 312 17 14-17 14m28 3h21" fill="none" stroke="#49cc90" stroke-width="5" stroke-linecap="round"/>
+    <path d="M703 329c18-20 45-20 61 0-16 20-43 20-61 0l-11 12v-24z" fill="none" stroke="#49cc90" stroke-width="4"/>
+    <circle cx="751" cy="325" r="2.5" fill="#49cc90" stroke="none"/>
+  </g>
+  <use href="#rack" x="870" y="219" width="172" height="190"/>
+  <use href="#rack" x="1068" y="219" width="172" height="190"/>
+  <use href="#rack" x="1266" y="219" width="172" height="190"/>
+  <path d="M847 396h10m397 0h-4m-395 0v-42" fill="none" stroke="#d8dde3" stroke-width="3"/>
+</svg>

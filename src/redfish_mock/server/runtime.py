@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 import uvicorn
 
 from .asgi import RedfishASGI
+from .router import ProfileRouter
 
 if TYPE_CHECKING:
     from redfish_mock.engine import MockBMC
@@ -24,15 +25,22 @@ class MockHTTPServer:
     def __init__(
         self,
         address: tuple[str, int],
-        bmc: MockBMC,
+        bmc: MockBMC | dict[str, MockBMC],
         *,
         delay: float = 0,
-        limit_concurrency: int = 64,
+        limit_concurrency: int | None = None,
         trusted_proxies: str = "",
     ) -> None:
         """Reserve a socket and configure one bounded Uvicorn worker for this BMC."""
         self.bmc = bmc
-        self.app = RedfishASGI(bmc, delay=delay)
+        self.profiles = bmc if isinstance(bmc, dict) else {bmc.profile: bmc}
+        self.app = (
+            ProfileRouter(bmc, delay=delay)
+            if isinstance(bmc, dict)
+            else RedfishASGI(bmc, delay=delay)
+        )
+        if limit_concurrency is None:
+            limit_concurrency = 320 if isinstance(bmc, dict) else 64
         self.socket = socket.create_server(address, backlog=64)
         self.server_port = self.socket.getsockname()[1]
         self._finished = threading.Event()

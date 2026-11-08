@@ -3,11 +3,11 @@ export UV_CACHE_DIR ?= $(CURDIR)/.cache/uv
 
 .PHONY: run up down check test format smoke build verify release
 run:
-	$(UV) run --frozen python -m redfish_mock --fleet
+	$(UV) run --frozen python -m redfish_mock --multi-profile --port 8000
 up:
 	docker compose up --build -d --wait
 down:
-	docker compose --profile extras down
+	docker compose down --remove-orphans
 check:
 	$(UV) run --frozen ruff check .
 	$(UV) run --frozen ruff format --check .

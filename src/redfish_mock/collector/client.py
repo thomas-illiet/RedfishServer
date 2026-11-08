@@ -7,7 +7,8 @@ import json
 import ssl
 import urllib.request
 from typing import TYPE_CHECKING, Any
-from urllib.parse import urlsplit
+
+from redfish_mock.urls import Endpoint
 
 if TYPE_CHECKING:
     from redfish_mock.models import Json
@@ -28,18 +29,8 @@ class RedfishClient:
         self, base_url: str, username: str, password: str, *, ca_file: str | None = None
     ) -> None:
         """Validate the origin and configure same-origin authentication and trusted TLS."""
-        parsed = urlsplit(base_url)
-        if (
-            parsed.scheme not in ("http", "https")
-            or not parsed.hostname
-            or parsed.username
-            or parsed.password
-            or parsed.query
-            or parsed.fragment
-            or parsed.path not in ("", "/")
-        ):
-            raise ValueError("URL must be an HTTP(S) origin, e.g. https://bmc.example:443")
-        self.base = base_url.rstrip("/")
+        self.endpoint = Endpoint(base_url)
+        self.base = self.endpoint.base
         self.auth = "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
         self.opener = urllib.request.build_opener(
             urllib.request.ProxyHandler({}),
@@ -49,15 +40,9 @@ class RedfishClient:
 
     def get(self, path: str) -> Json:
         """Fetch a JSON resource while rejecting links outside the configured origin."""
-        parsed = urlsplit(path)
-        if (
-            parsed.scheme
-            or parsed.netloc
-            or parsed.fragment
-            or not parsed.path.startswith("/redfish/")
-        ):
-            raise ValueError("Refusing a link outside the configured Redfish origin")
         # The constructor restricts the origin to HTTP(S); links cannot change that origin.
-        request = urllib.request.Request(self.base + path, headers={"Authorization": self.auth})  # noqa: S310
+        request = urllib.request.Request(  # noqa: S310 -- Endpoint restricts scheme and profile.
+            self.endpoint.url(path, redfish_only=True), headers={"Authorization": self.auth}
+        )
         with self.opener.open(request, timeout=10) as response:
             return json.load(response)

@@ -1,0 +1,39 @@
+name: redfish-mock
+
+x-bmc: &bmc
+  image: redfish-mock:local
+  build: .
+  environment:
+    REDFISH_USERNAME: ${REDFISH_USERNAME:-admin}
+    REDFISH_PASSWORD: ${REDFISH_PASSWORD:-admin}
+    REDFISH_METRIC_INTERVAL: ${REDFISH_METRIC_INTERVAL:-5}
+    REDFISH_SEED: ${REDFISH_SEED:-}
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 128
+  init: true
+
+services:
+  dell:
+    <<: *bmc
+    command: [--vendor, dell, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8001:8000']
+  hpe:
+    <<: *bmc
+    command: [--vendor, hpe, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8002:8000']
+  supermicro:
+    <<: *bmc
+    command: [--vendor, supermicro, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8003:8000']
+  lenovo:
+    <<: *bmc
+    profiles: [extras]
+    command: [--vendor, lenovo, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8004:8000']
+  hpe-ilo4:
+    <<: *bmc
+    profiles: [extras]
+    command: [--vendor, hpe-ilo4, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:8005:8000']

@@ -1,0 +1,60 @@
+[project]
+name = "redfish-mock-server"
+version = "0.2.0"
+description = "Local stateful Redfish mocks for Dell, HPE and Supermicro"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "uvicorn>=0.54.0",
+]
+
+[dependency-groups]
+audit = [
+    "pip-audit>=2.10.1",
+]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.4",
+    "ty>=0.0.99",
+]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+extend-exclude = ["mockups", "vendor", ".cache"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D", "ANN401", "COM812", "ISC001", "EM", "TRY003", "TRY301",
+    "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "C901",
+    "FBT", "T201", "S105", "S106", "CPY001",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S603", "S607", "ANN", "PLR0914", "INP001"]
+"scripts/*" = ["S310", "INP001", "S603", "S607"] # Fixed local tool commands, never shell input.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --cov=redfish_mock --cov-report=term-missing --cov-report=json:reports/coverage.json --cov-report=xml:reports/coverage.xml --cov-branch --cov-fail-under=80"
+
+[tool.ty.environment]
+python-version = "3.14"
+
+[tool.ty.src]
+include = ["redfish_mock"]
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.coverage.run]
+source = ["redfish_mock"]
+branch = true
+patch = ["subprocess"]
+relative_files = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true

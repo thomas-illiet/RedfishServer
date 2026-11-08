@@ -1,0 +1,12 @@
+Generated with the built-in imagegen tool.
+Output: redfish-banner.png
+
+Use case: illustration-story
+Asset type: wide GitHub README banner, approximately 3:1 landscape.
+Primary request: a fun, polished illustrated banner for the project "RedfishServer", a local Redfish API mock server used to test Dell, HPE and Supermicro hardware clients.
+Subject: a cheerful red fish mascot acting as a tiny system administrator, swimming beside a playful miniature datacenter with three compact server racks, softly glowing status LEDs and a small terminal screen displaying a simple fish icon.
+Style/medium: sophisticated editorial cartoon illustration with clean bold shapes, expressive character, subtle texture and restrained dimensional shading. Charming developer-project artwork.
+Composition/framing: readable wide banner with generous margins; large clear project title integrated into the open space and the fish/server scene beside it. All artwork comfortably inside the frame.
+Lighting/mood: playful, welcoming, softly luminous.
+Text (verbatim): "RedfishServer". This is the only text in the image, spelled exactly, in large crisp modern lettering.
+Constraints: no vendor logos, no additional words, no watermark, no tiny illegible labels. Strong contrast and legibility when displayed at 900 pixels wide. Opaque background.

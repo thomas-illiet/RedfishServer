@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" agent="Redfish Mock documentation" version="31.1.8" type="device">
+  <diagram id="deployment" name="Redfish mock deployment">
+    <mxGraphModel dx="1280" dy="830" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="830" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="canvas" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=none;locked=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="0" y="0" width="1280" height="830" />
+        </mxCell>
+        <mxCell id="title" value="Redfish mock deployment" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=30;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="50" y="30" width="1180" height="48" />
+        </mxCell>
+        <mxCell id="subtitle" value="Three independent BMCs, accessible to the collector over HTTP or HTTPS." style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=17;fontColor=#52637A;fontStyle=0;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="50" y="86" width="1180" height="48" />
+        </mxCell>
+        <mxCell id="collector" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#E8F6F2;strokeColor=#72B7A6;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="390" y="155" width="500" height="100" />
+        </mxCell>
+        <mxCell id="collector-title" value="Redfish client / collector" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="collector" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="464" height="35" />
+        </mxCell>
+        <mxCell id="collector-body" value="Inventory, alerts and KPI calculations" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=18;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="collector" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="464" height="39" />
+        </mxCell>
+        <mxCell id="host" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#F7F9FC;strokeColor=#CBD5E1;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="300" width="1200" height="410" />
+        </mxCell>
+        <mxCell id="host-title" value="Lab machine · Docker Compose" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=20;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="65" y="318" width="1150" height="34" />
+        </mxCell>
+        <mxCell id="dell" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#EAF2FF;strokeColor=#8DAFE2;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="70" y="435" width="340" height="180" />
+        </mxCell>
+        <mxCell id="dell-title" value="Dell · iDRAC" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="dell" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="304" height="35" />
+        </mxCell>
+        <mxCell id="dell-body" value="PowerEdge R750&#10;127.0.0.1:8001 → :8000&#10;2 CPUs · 512 GiB" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="dell" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="304" height="119" />
+        </mxCell>
+        <mxCell id="to-dell" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="collector" target="dell">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="640" y="390" />
+              <mxPoint x="240" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hpe" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#EAF2FF;strokeColor=#8DAFE2;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="470" y="435" width="340" height="180" />
+        </mxCell>
+        <mxCell id="hpe-title" value="HPE · iLO" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="hpe" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="304" height="35" />
+        </mxCell>
+        <mxCell id="hpe-body" value="ProLiant DL380 Gen10 Plus&#10;127.0.0.1:8002 → :8000&#10;2 CPUs · 256 GiB" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="hpe" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="304" height="119" />
+        </mxCell>
+        <mxCell id="to-hpe" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="collector" target="hpe">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="640" y="390" />
+              <mxPoint x="640" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="smc" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#EAF2FF;strokeColor=#8DAFE2;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="870" y="435" width="340" height="180" />
+        </mxCell>
+        <mxCell id="smc-title" value="Supermicro · BMC" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="smc" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="304" height="35" />
+        </mxCell>
+        <mxCell id="smc-body" value="SYS-6019U-TR4&#10;127.0.0.1:8003 → :8000&#10;2 CPUs · 192 GiB" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="smc" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="304" height="119" />
+        </mxCell>
+        <mxCell id="to-smc" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="collector" target="smc">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="640" y="390" />
+              <mxPoint x="1040" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="protocol" value="Redfish API · Basic or session" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="670" y="263" width="450" height="30" />
+        </mxCell>
+        <mxCell id="independence" value="Each instance has its own state, sessions and seed · storage in memory only" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=17;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="70" y="640" width="1140" height="34" />
+        </mxCell>
+        <mxCell id="options" value="Ports published on 127.0.0.1 by default; configurable LAN address.&#10;HTTPS available in Python mode with a certificate and key. Optional profiles: Lenovo :8004, iLO 4 :8005." style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#52637A;fontStyle=0;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="50" y="742" width="1180" height="58" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

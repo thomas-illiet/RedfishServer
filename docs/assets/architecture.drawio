@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" agent="Redfish Mock documentation" version="31.1.8" type="device">
+  <diagram id="architecture" name="From imported profile to Redfish response">
+    <mxGraphModel dx="1280" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="860" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="canvas" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=none;locked=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="0" y="0" width="1280" height="860" />
+        </mxCell>
+        <mxCell id="title" value="From imported profile to Redfish response" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=30;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="50" y="30" width="1180" height="48" />
+        </mxCell>
+        <mxCell id="subtitle" value="Source data stays unchanged; each instance works on its own copy in memory." style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=17;fontColor=#52637A;fontStyle=0;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="50" y="86" width="1180" height="48" />
+        </mxCell>
+        <mxCell id="fixtures" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#F4F6FA;strokeColor=#CBD5E1;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="50" y="175" width="330" height="170" />
+        </mxCell>
+        <mxCell id="fixtures-title" value="1 · Imported files" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="fixtures" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
+        </mxCell>
+        <mxCell id="fixtures-body" value="mockups/{profile}&#10;index.json + _steps&#10;Provenance and checksums retained" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="fixtures" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="294" height="109" />
+        </mxCell>
+        <mxCell id="enrichment" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#EAF2FF;strokeColor=#8DAFE2;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="470" y="175" width="330" height="170" />
+        </mxCell>
+        <mxCell id="enrichment-title" value="2 · Corrections and additions" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="enrichment" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
+        </mxCell>
+        <mxCell id="enrichment-body" value="contracts.py · inventory.py&#10;monitoring.py&#10;Contracts, CPU/DIMMs and sensors" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="enrichment" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="294" height="109" />
+        </mxCell>
+        <mxCell id="state" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#E8F6F2;strokeColor=#72B7A6;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="175" width="330" height="170" />
+        </mxCell>
+        <mxCell id="state-title" value="3 · Baseline and active state" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="state" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
+        </mxCell>
+        <mxCell id="state-body" value="original: enriched baseline&#10;resources: mutable copy&#10;Sessions owned by each instance" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="state" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="294" height="109" />
+        </mxCell>
+        <mxCell id="import" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fixtures" target="enrichment">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="copy" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="enrichment" target="state">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="http" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#F4F6FA;strokeColor=#CBD5E1;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="50" y="490" width="330" height="180" />
+        </mxCell>
+        <mxCell id="http-title" value="HTTP / HTTPS" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="http" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
+        </mxCell>
+        <mxCell id="http-body" value="server.py&#10;Read the JSON body&#10;Limits, delays and headers" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="http" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="294" height="119" />
+        </mxCell>
+        <mxCell id="engine" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#EAF2FF;strokeColor=#8DAFE2;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="470" y="455" width="330" height="250" />
+        </mxCell>
+        <mxCell id="engine-title" value="MockBMC · lock" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="engine" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
+        </mxCell>
+        <mxCell id="engine-body" value="Sessions and authentication&#10;Clock-based simulation&#10;GET · PATCH · actions&#10;/_mock/* controls" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="engine" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="294" height="189" />
+        </mxCell>
+        <mxCell id="response" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#E8F6F2;strokeColor=#72B7A6;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="490" width="330" height="180" />
+        </mxCell>
+        <mxCell id="response-title" value="Response to the client" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="response" connectable="0">
+          <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
+        </mxCell>
+        <mxCell id="response-body" value="JSON and HTTP status&#10;Vendor response envelope&#10;Resource ETags&#10;Simulated Health / HealthRollup" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="response" connectable="0">
+          <mxGeometry as="geometry" x="18" y="49" width="294" height="119" />
+        </mxCell>
+        <mxCell id="request" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="http" target="engine">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="response-edge" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="engine" target="response">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="state-to-engine" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#57738F;strokeWidth=2;fontFamily=Arial;fontSize=14;fontColor=#425A74;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="state" target="engine">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1055" y="395" />
+              <mxPoint x="635" y="395" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="state-caption" value="Read and modify the active copy" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="700" y="362" width="500" height="28" />
+        </mxCell>
+        <mxCell id="mode-caption" value="Time determines readings; requests trigger updates.&#10;/_mock/reset restores the baseline and revokes sessions. --raw-fixtures disables additions." style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=17;fontColor=#52637A;fontStyle=0;spacing=0;" vertex="1" parent="1" connectable="0">
+          <mxGeometry as="geometry" x="50" y="760" width="1180" height="62" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,16 @@
+.venv
+.cache
+.git
+__pycache__
+**/__pycache__
+.pytest_cache
+.ruff_cache
+.coverage
+.env
+certs
+*.log
+reports
+dist
+secrets
+.env.*
+.DS_Store

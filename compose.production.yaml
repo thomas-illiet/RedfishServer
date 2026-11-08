@@ -1,0 +1,54 @@
+name: redfish-production
+
+x-bmc: &bmc
+  image: ${REDFISH_IMAGE:?Set a versioned REDFISH_IMAGE}
+  environment:
+    REDFISH_USERNAME: ${REDFISH_USERNAME:?Set REDFISH_USERNAME}
+    REDFISH_PASSWORD_FILE: /run/secrets/redfish_password
+    REDFISH_METRIC_INTERVAL: ${REDFISH_METRIC_INTERVAL:-5}
+    REDFISH_SEED: ${REDFISH_SEED:-}
+    REDFISH_TRUSTED_PROXIES: ${REDFISH_TRUSTED_PROXIES:-}
+  secrets: [redfish_password]
+  user: '10001:10001'
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 128
+  cpus: 1.0
+  mem_limit: 256m
+  init: true
+  restart: unless-stopped
+  stop_grace_period: 20s
+  logging:
+    driver: json-file
+    options:
+      max-size: '10m'
+      max-file: '3'
+
+services:
+  dell:
+    <<: *bmc
+    command: [--production, --vendor, dell, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:${REDFISH_DELL_PORT:-8001}:8000']
+  hpe:
+    <<: *bmc
+    command: [--production, --vendor, hpe, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:${REDFISH_HPE_PORT:-8002}:8000']
+  supermicro:
+    <<: *bmc
+    command: [--production, --vendor, supermicro, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:${REDFISH_SUPERMICRO_PORT:-8003}:8000']
+  lenovo:
+    <<: *bmc
+    profiles: [extras]
+    command: [--production, --vendor, lenovo, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:${REDFISH_LENOVO_PORT:-8004}:8000']
+  hpe-ilo4:
+    <<: *bmc
+    profiles: [extras]
+    command: [--production, --vendor, hpe-ilo4, --host, 0.0.0.0, --port, '8000']
+    ports: ['${REDFISH_BIND_ADDRESS:-127.0.0.1}:${REDFISH_ILO4_PORT:-8005}:8000']
+
+secrets:
+  redfish_password:
+    file: ${REDFISH_PASSWORD_SECRET:?Set the path to the password secret file}

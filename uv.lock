@@ -439,7 +439,7 @@ wheels = [
 [[package]]
 name = "redfish-mock-server"
 version = "0.2.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "uvicorn" },
 ]

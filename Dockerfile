@@ -7,6 +7,11 @@ COPY pyproject.toml uv.lock .python-version ./
 ENV UV_PYTHON_DOWNLOADS=never UV_LINK_MODE=copy
 RUN ["/usr/local/bin/uv", "sync", "--frozen", "--no-dev", "--no-group", "audit", "--no-install-project"]
 
+COPY src /app/src
+COPY readme.md /app/readme.md
+COPY docs/sources.md /app/docs/sources.md
+RUN ["/usr/local/bin/uv", "sync", "--frozen", "--no-dev", "--no-group", "audit", "--no-editable"]
+
 FROM base AS minimal
 # Keep installed-package metadata and CA roots; remove actual tooling, not scan evidence.
 RUN apk add --no-network ca-certificates-bundle alpine-baselayout-data \
@@ -22,9 +27,7 @@ LABEL org.opencontainers.image.title="RedfishServer" \
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PATH="/app/.venv/bin:/usr/local/bin:/usr/bin:/bin"
 WORKDIR /app
 COPY --from=dependencies /app/.venv /app/.venv
-COPY redfish_mock /app/redfish_mock
-COPY mockups /app/mockups
-COPY README.md /app/README.md
+COPY readme.md /app/readme.md
 COPY docs /app/docs
 USER 10001:10001
 EXPOSE 8000

@@ -1,3 +1,5 @@
+"""Regression tests for simulation."""
+
 from __future__ import annotations
 
 import copy
@@ -13,18 +15,26 @@ from redfish_mock.monitoring import SCENARIOS, paths
 
 @pytest.fixture
 def clock(monkeypatch):
+    """Provide a controllable monotonic clock for deterministic telemetry tests."""
     now = [1000.0]
-    monkeypatch.setattr(simulation, "time", SimpleNamespace(monotonic=lambda: now[0]))
+
+    def _monotonic():
+        """Read the test-controlled time without consulting the system clock."""
+        return now[0]
+
+    monkeypatch.setattr(simulation, "time", SimpleNamespace(monotonic=_monotonic))
     return now
 
 
 def get(bmc, path):
+    """Read a resource from the simulator and require a successful response."""
     return bmc.handle("GET", path, {}).body
 
 
 @pytest.mark.parametrize("profile", ["dell", "hpe", "supermicro"])
 @pytest.mark.parametrize("scenario", SCENARIOS)
 def test_dynamic_ranges_coherence_and_faults(clock, profile, scenario):
+    """Verify dynamic ranges coherence and faults."""
     bmc = MockBMC(profile, require_auth=False, seed=42)
     bmc.handle("POST", "/_mock/scenario", {}, {"Scenario": scenario})
     system, _, power_uri, thermal_uri = paths(profile)
@@ -102,6 +112,7 @@ def test_dynamic_ranges_coherence_and_faults(clock, profile, scenario):
 
 
 def test_sampling_seed_history_and_etag(clock):
+    """Verify sampling seed history and etag."""
     frequent = MockBMC("hpe", require_auth=False, seed=12)
     sparse = MockBMC("hpe", require_auth=False, seed=12)
     different = MockBMC("hpe", require_auth=False, seed=13)
@@ -130,6 +141,7 @@ def test_sampling_seed_history_and_etag(clock):
 
 @pytest.mark.parametrize("profile", ["dell", "hpe", "supermicro"])
 def test_off_standby_and_repeated_power_cycles(clock, profile):
+    """Verify off standby and repeated power cycles."""
     bmc = MockBMC(profile, require_auth=False, seed=5)
     system, _, power_uri, thermal_uri = paths(profile)
     action = get(bmc, system)["Actions"]["#ComputerSystem.Reset"]["target"]
@@ -157,6 +169,7 @@ def test_off_standby_and_repeated_power_cycles(clock, profile):
 
 @pytest.mark.parametrize("options", [{"dynamic_metrics": False}, {"raw_fixtures": True}])
 def test_static_and_raw_unchanged(clock, options):
+    """Verify static and raw unchanged."""
     bmc = MockBMC("dell", require_auth=False, **options)
     power_uri = paths("dell")[2]
     initial = get(bmc, power_uri)
@@ -167,12 +180,14 @@ def test_static_and_raw_unchanged(clock, options):
 
 @pytest.mark.parametrize("interval", [0, -1, 61])
 def test_invalid_metric_interval(interval):
+    """Verify invalid metric interval."""
     with pytest.raises(ValueError, match="Metric interval"):
         MockBMC("dell", metric_interval=interval)
 
 
 @pytest.mark.parametrize("interval", [1, 7, 60])
 def test_configurable_interval_and_replay(clock, interval):
+    """Verify configurable interval and replay."""
     bmc = MockBMC("hpe", require_auth=False, seed=42, metric_interval=interval)
     power_uri = paths("hpe")[2]
     initial = get(bmc, power_uri)
@@ -187,6 +202,7 @@ def test_configurable_interval_and_replay(clock, interval):
 
 
 def test_cli_environment_and_explicit_options(monkeypatch):
+    """Verify cli environment and explicit options."""
     monkeypatch.setenv("REDFISH_METRIC_INTERVAL", "10")
     monkeypatch.setenv("REDFISH_SEED", "42")
     args = parser().parse_args([])

@@ -7,6 +7,7 @@ from pathlib import Path
 
 
 def check(path: Path = Path("reports/coverage.json"), minimum: float = 80) -> dict[str, float]:
+    """Require independent minimum line and branch coverage in a coverage JSON report."""
     totals = json.loads(path.read_text())["totals"]
     if not totals.get("num_statements") or not totals.get("num_branches"):
         raise SystemExit("Coverage must include application lines and branches.")

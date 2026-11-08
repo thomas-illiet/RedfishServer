@@ -20,7 +20,7 @@
         <mxCell id="fixtures-title" value="1 · Imported files" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="fixtures" connectable="0">
           <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
         </mxCell>
-        <mxCell id="fixtures-body" value="mockups/{profile}&#10;index.json + _steps&#10;Provenance and checksums retained" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="fixtures" connectable="0">
+        <mxCell id="fixtures-body" value="_fixtures/{profile}&#10;index.json + _steps&#10;Provenance and checksums retained" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="fixtures" connectable="0">
           <mxGeometry as="geometry" x="18" y="49" width="294" height="109" />
         </mxCell>
         <mxCell id="enrichment" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#EAF2FF;strokeColor=#8DAFE2;strokeWidth=1.5;" vertex="1" parent="1">
@@ -29,7 +29,7 @@
         <mxCell id="enrichment-title" value="2 · Corrections and additions" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="enrichment" connectable="0">
           <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
         </mxCell>
-        <mxCell id="enrichment-body" value="contracts.py · inventory.py&#10;monitoring.py&#10;Contracts, CPU/DIMMs and sensors" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="enrichment" connectable="0">
+        <mxCell id="enrichment-body" value="contracts.py · inventory.py&#10;monitoring/&#10;Contracts, CPU/DIMMs and sensors" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="enrichment" connectable="0">
           <mxGeometry as="geometry" x="18" y="49" width="294" height="109" />
         </mxCell>
         <mxCell id="state" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#E8F6F2;strokeColor=#72B7A6;strokeWidth=1.5;" vertex="1" parent="1">
@@ -53,7 +53,7 @@
         <mxCell id="http-title" value="HTTP / HTTPS" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=19;fontColor=#192B43;fontStyle=1;spacing=0;" vertex="1" parent="http" connectable="0">
           <mxGeometry as="geometry" x="18" y="12" width="294" height="35" />
         </mxCell>
-        <mxCell id="http-body" value="server.py&#10;Read the JSON body&#10;Limits, delays and headers" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="http" connectable="0">
+        <mxCell id="http-body" value="server/&#10;Read the JSON body&#10;Limits, delays and headers" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#192B43;fontStyle=0;spacing=0;" vertex="1" parent="http" connectable="0">
           <mxGeometry as="geometry" x="18" y="49" width="294" height="119" />
         </mxCell>
         <mxCell id="engine" value="" style="rounded=1;arcSize=8;html=0;whiteSpace=wrap;fillColor=#EAF2FF;strokeColor=#8DAFE2;strokeWidth=1.5;" vertex="1" parent="1">

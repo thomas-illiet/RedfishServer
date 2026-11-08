@@ -14,7 +14,10 @@ from typing import Any
 
 
 class Client:
+    """Drive authenticated HTTP requests against a disposable mock server."""
+
     def __init__(self, url: str, username: str, password: str, ca_file: str | None = None) -> None:
+        """Configure the target origin, credentials and optional trusted CA certificate."""
         self.ca_file = ca_file
         self.url = url.rstrip("/")
         self.auth = "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
@@ -24,6 +27,7 @@ class Client:
         )
 
     def request(self, method: str, path: str, data: dict | None = None, status: int = 200) -> Any:
+        """Send an HTTP request and decode its response while closing the connection."""
         payload = json.dumps(data).encode() if data is not None else None
         req = urllib.request.Request(
             self.url + path,
@@ -39,6 +43,7 @@ class Client:
 
 
 def check_profile(vendor: str, client: Client) -> dict[str, Any]:
+    """Exercise discovery, authentication and reset behavior on a disposable profile."""
     if client.request("GET", "/healthz")["profile"] != vendor:
         raise RuntimeError("Unexpected BMC profile")
     if not client.request("GET", "/readyz")["ready"]:
@@ -126,6 +131,7 @@ def check_profile(vendor: str, client: Client) -> dict[str, Any]:
 
 
 def main() -> None:
+    """Run explicit reset-authorized smoke checks against disposable targets."""
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument(
         "--url",
